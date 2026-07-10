@@ -8,84 +8,94 @@ export interface ChoiceStep {
   question: string;
   helper?: string;
   options: string[];
+  icons?: Record<string, string>;
 }
 
-export interface WeightStep {
-  id: "weight";
-  kind: "weight";
+export interface WheelStep {
+  id: string;
+  kind: "wheel";
+  key: "age";
+  question: string;
+  helper?: string;
+  min: number;
+  max: number;
+  suffix: string;
+}
+
+export interface HeightWeightQuizStep {
+  id: "heightWeight";
+  kind: "height-weight";
   question: string;
   helper?: string;
 }
 
-export type QuizStep = ChoiceStep | WeightStep;
+export type QuizStep = ChoiceStep | WheelStep | HeightWeightQuizStep;
+
+const LOCATION_ICONS = { "النادي": "🏋️‍♀️", "المنزل": "🏠" };
 
 export const QUIZ_STEPS: QuizStep[] = [
   {
     id: "goal",
     kind: "choice",
     key: "goal",
-    question: "ما هو هدفك الأساسي؟",
-    options: ["تنشيف وخسارة الدهون", "تضخيم وزيادة الكتلة العضلية"],
+    question: "ما هو هدفك؟",
+    options: ["خسارة الوزن", "بناء العضلات", "المحافظة على الوزن", "تحسين اللياقة"],
   },
   {
-    id: "trainingLocation",
+    id: "trainingPreference",
     kind: "choice",
-    key: "trainingLocation",
-    question: "أين تفضلين ممارسة التمارين؟",
-    options: ["النادي", "المنزل", "النادي والمنزل"],
+    key: "trainingPreference",
+    question: "أين تفضلين التمرين؟",
+    options: ["النادي", "المنزل"],
+    icons: LOCATION_ICONS,
   },
   {
     id: "level",
     kind: "choice",
     key: "level",
-    question: "ما هو مستواك الحالي في التمارين؟",
-    helper: "نستخدم إجابتك لاختيار مستوى التمارين المناسب لك.",
+    question: "ما هو مستواك؟",
     options: ["مبتدئة", "متوسطة", "متقدمة"],
   },
   {
-    id: "trainingDays",
+    id: "weeklyDays",
     kind: "choice",
-    key: "trainingDays",
-    question: "كم يوم تقدرين تتمرنين في الأسبوع؟",
-    options: ["يومين", "3 أيام", "4 أيام", "5 أيام أو أكثر"],
+    key: "weeklyDays",
+    question: "كم مرة تستطيعين التمرين أسبوعياً؟",
+    options: ["2 أيام", "3 أيام", "4 أيام", "5 أيام", "6 أيام"],
   },
   {
-    id: "mainObstacle",
+    id: "gender",
     kind: "choice",
-    key: "mainObstacle",
-    question: "وش أكثر شيء يعيق وصولك لهدفك؟",
-    options: [
-      "ما أعرف وش التمارين المناسبة",
-      "ما أعرف كيف أرتب أكلي",
-      "أبدأ وأوقف بسرعة",
-      "أحتاج متابعة وتحفيز",
-      "أحتاج خطة واضحة ومتكاملة",
-    ],
+    key: "gender",
+    question: "الجنس",
+    options: ["أنثى", "ذكر"],
   },
   {
-    id: "programType",
-    kind: "choice",
-    key: "programType",
-    question: "وش حابة يكون برنامجك؟",
-    helper: "اختاري الشيء اللي تحتاجينه فعلا في خطتك.",
-    options: ["نظام غذائي + جداول تمارين + متابعة", "جداول تمارين فقط"],
-  },
-  {
-    id: "ageRange",
-    kind: "choice",
-    key: "ageRange",
+    id: "age",
+    kind: "wheel",
+    key: "age",
     question: "كم عمرك؟",
-    options: ["18-24", "25-31", "32-38", "39-45", "46+"],
+    min: 12,
+    max: 70,
+    suffix: "سنة",
   },
   {
-    id: "weight",
-    kind: "weight",
-    question: "وش وزنك الحالي ووزنك المستهدف؟",
-    helper: "هذي المعلومة لتخصيص تجربتك فقط.",
+    id: "heightWeight",
+    kind: "height-weight",
+    question: "كم طولك ووزنك؟",
+    helper: "هذي المعلومة لحساب مؤشر كتلة الجسم وتخصيص خطتك.",
+  },
+  {
+    id: "preferredProgram",
+    kind: "choice",
+    key: "preferredProgram",
+    question: "وش حابه يكون برنامجك؟",
+    options: ["جدول النادي", "جدول المنزل"],
+    icons: { "جدول النادي": "🏋️‍♀️", "جدول المنزل": "🏠" },
   },
 ];
 
 export function validateStep(step: QuizStep, answers: QuizAnswers): string | null {
-  if (step.kind === "weight") return null;
+  if (step.kind !== "choice") return null;
   return validateRequiredChoice(answers[step.key] as string);
 }

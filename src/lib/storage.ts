@@ -1,4 +1,5 @@
 import { BasmaFitLead, ProductKey, QuizAnswers } from "./types";
+import { calculateBmi } from "./recommendation";
 
 const ANSWERS_KEY = "basmafit_quiz_answers";
 const LEAD_KEY = "basmafit_lead";
@@ -28,14 +29,15 @@ export function buildLead(
 ): BasmaFitLead {
   return {
     goal: answers.goal,
-    trainingLocation: answers.trainingLocation,
+    trainingPreference: answers.trainingPreference,
     level: answers.level,
-    trainingDays: answers.trainingDays,
-    mainObstacle: answers.mainObstacle,
-    programType: answers.programType,
-    ageRange: answers.ageRange,
-    currentWeight: answers.currentWeight,
-    targetWeight: answers.targetWeight,
+    weeklyDays: answers.weeklyDays,
+    gender: answers.gender,
+    age: answers.age,
+    height: answers.height,
+    weight: answers.weight,
+    bmi: Number(calculateBmi(answers.height, answers.weight).toFixed(1)),
+    preferredProgram: answers.preferredProgram,
     recommendedPlan,
     selectedProductKey,
     selectedProductTitle,

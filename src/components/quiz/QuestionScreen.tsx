@@ -4,7 +4,8 @@ import { OptionCard } from "@/components/OptionCard";
 import { ProgressBar } from "@/components/ProgressBar";
 import { QuizStep } from "@/lib/quiz-steps";
 import { QuizAnswers } from "@/lib/types";
-import { WeightStepper } from "./WeightStepper";
+import { HeightWeightStep } from "./HeightWeightStep";
+import { WheelPicker } from "./WheelPicker";
 
 export function QuestionScreen({
   step,
@@ -49,23 +50,35 @@ export function QuestionScreen({
         )}
 
         <div className="mt-7">
-          {step.kind === "choice" ? (
+          {step.kind === "choice" && (
             <div className="flex flex-col gap-3">
               {step.options.map((option) => (
                 <OptionCard
                   key={option}
                   label={option}
+                  icon={step.icons?.[option]}
                   selected={answers[step.key] === option}
                   onClick={() => onChange(step.key, option)}
                 />
               ))}
             </div>
-          ) : (
-            <WeightStepper
-              currentWeight={answers.currentWeight}
-              targetWeight={answers.targetWeight}
-              onChangeCurrent={(value) => onChange("currentWeight", value)}
-              onChangeTarget={(value) => onChange("targetWeight", value)}
+          )}
+
+          {step.kind === "wheel" && (
+            <WheelPicker
+              values={Array.from({ length: step.max - step.min + 1 }, (_, i) => step.min + i)}
+              value={answers[step.key]}
+              onChange={(value) => onChange(step.key, value)}
+              suffix={step.suffix}
+            />
+          )}
+
+          {step.kind === "height-weight" && (
+            <HeightWeightStep
+              height={answers.height}
+              weight={answers.weight}
+              onChangeHeight={(value) => onChange("height", value)}
+              onChangeWeight={(value) => onChange("weight", value)}
             />
           )}
 

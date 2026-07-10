@@ -5,29 +5,17 @@ function buildWhatsAppUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-export function getSupportWhatsAppUrl(lead: BasmaFitLead | null): string {
-  if (!lead || !lead.selectedProductTitle) {
-    return buildWhatsAppUrl("مرحبًا، أحتاج مساعدة في إكمال الاشتراك في BasmaFit.");
-  }
-
-  const message = `مرحبًا، أكملت اختبار BasmaFit واخترت ${lead.selectedProductTitle}.
-
-هدفي: ${lead.goal}
-مكان التمرين: ${lead.trainingLocation}
-المستوى: ${lead.level}
-عدد أيام التمرين: ${lead.trainingDays}
-
-أحتاج مساعدة في إكمال الاشتراك والدفع.`;
-  return buildWhatsAppUrl(message);
+// الرسالة الثابتة لزر الواتساب العائم في كل الشاشات
+export function getFloatingWhatsAppUrl(): string {
+  return buildWhatsAppUrl("مرحبًا، أكملت اختبار بسمة فت وأحتاج مساعدة في اختيار البرنامج المناسب.");
 }
 
 export function getInvoiceWhatsAppUrl(lead: BasmaFitLead): string {
-  const message = `مرحبًا، أكملت الدفع لـ ${lead.selectedProductTitle} في BasmaFit.
+  const message = `مرحبًا، أكملت الدفع لـ ${lead.selectedProductTitle} في بسمة فت.
 
 هدفي: ${lead.goal}
-مكان التمرين: ${lead.trainingLocation}
+مكان التمرين: ${lead.trainingPreference}
 المستوى: ${lead.level}
-عدد أيام التمرين: ${lead.trainingDays}
 
 هذه فاتورة الدفع، بانتظار تفعيل اشتراكي.`;
   return buildWhatsAppUrl(message);

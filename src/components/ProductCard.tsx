@@ -3,16 +3,16 @@ import { PrimaryButton, SecondaryButton } from "./buttons";
 
 export function ProductCard({
   product,
-  description,
+  badge,
+  highlighted = false,
   onSelect,
 }: {
   product: Product;
-  description?: string;
+  badge?: string;
+  highlighted?: boolean;
   onSelect: () => void;
 }) {
-  const highlighted = Boolean(product.badge);
   const Button = highlighted ? PrimaryButton : SecondaryButton;
-  const resolvedDescription = description ?? product.description;
 
   return (
     <div
@@ -22,9 +22,9 @@ export function ProductCard({
           : "border-border bg-card"
       }`}
     >
-      {product.badge && (
+      {badge && (
         <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
-          {product.badge}
+          {badge}
         </span>
       )}
 
@@ -32,47 +32,13 @@ export function ProductCard({
         {product.title}
       </h3>
 
-      {product.price && (
-        <p className="mt-2 text-center text-3xl font-black text-yellow">
-          {product.price}
-        </p>
-      )}
-
-      {product.duration && (
-        <p className="mt-1 text-center text-sm font-bold text-muted">
-          المدة: {product.duration}
-        </p>
-      )}
-
-      <p className="mt-3 text-center text-sm leading-6 text-muted">
-        {resolvedDescription}
+      <p className="mt-2 text-center text-3xl font-black text-yellow">
+        {product.price}
       </p>
 
-      {product.features && (
-        <ul className="mt-5 flex flex-col gap-2.5">
-          {product.features.map((feature) => (
-            <li key={feature} className="flex items-start gap-2 text-sm text-foreground">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="mt-0.5 shrink-0"
-              >
-                <circle cx="12" cy="12" r="10" fill="#D64B78" opacity="0.15" />
-                <path
-                  d="M8 12.5l2.5 2.5L16 9.5"
-                  stroke="#D64B78"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="leading-6">{feature}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <p className="mt-3 text-center text-sm leading-6 text-muted">
+        {product.description}
+      </p>
 
       <div className="mt-6">
         <Button onClick={onSelect}>{product.buttonLabel}</Button>

@@ -1,52 +1,44 @@
-export type Goal = "تنشيف وخسارة الدهون" | "تضخيم وزيادة الكتلة العضلية";
+export type Goal =
+  | "خسارة الوزن"
+  | "بناء العضلات"
+  | "المحافظة على الوزن"
+  | "تحسين اللياقة";
 
-export type TrainingLocation = "النادي" | "المنزل" | "النادي والمنزل";
+export type TrainingPreference = "النادي" | "المنزل";
 
 export type Level = "مبتدئة" | "متوسطة" | "متقدمة";
 
-export type TrainingDays = "يومين" | "3 أيام" | "4 أيام" | "5 أيام أو أكثر";
+export type WeeklyDays = "2 أيام" | "3 أيام" | "4 أيام" | "5 أيام" | "6 أيام";
 
-export type MainObstacle =
-  | "ما أعرف وش التمارين المناسبة"
-  | "ما أعرف كيف أرتب أكلي"
-  | "أبدأ وأوقف بسرعة"
-  | "أحتاج متابعة وتحفيز"
-  | "أحتاج خطة واضحة ومتكاملة";
+export type Gender = "أنثى" | "ذكر";
 
-export type ProgramType = "نظام غذائي + جداول تمارين + متابعة" | "جداول تمارين فقط";
+export type PreferredProgram = "جدول النادي" | "جدول المنزل";
 
-export type AgeRange = "18-24" | "25-31" | "32-38" | "39-45" | "46+";
-
-export type ProductKey =
-  | "CUTTING_PROGRAM"
-  | "BULKING_PROGRAM"
-  | "TALTI_GHEIR"
-  | "GYM_SCHEDULE"
-  | "HOME_SCHEDULE"
-  | "FULL_PACKAGE";
+export type ProductKey = "GYM" | "HOME";
 
 export interface QuizAnswers {
   goal: Goal | "";
-  trainingLocation: TrainingLocation | "";
+  trainingPreference: TrainingPreference | "";
   level: Level | "";
-  trainingDays: TrainingDays | "";
-  mainObstacle: MainObstacle | "";
-  programType: ProgramType | "";
-  ageRange: AgeRange | "";
-  currentWeight: number;
-  targetWeight: number;
+  weeklyDays: WeeklyDays | "";
+  gender: Gender | "";
+  age: number;
+  height: number;
+  weight: number;
+  preferredProgram: PreferredProgram | "";
 }
 
 export interface BasmaFitLead {
   goal: string;
-  trainingLocation: string;
+  trainingPreference: string;
   level: string;
-  trainingDays: string;
-  mainObstacle: string;
-  programType: string;
-  ageRange: string;
-  currentWeight: number;
-  targetWeight: number;
+  weeklyDays: string;
+  gender: string;
+  age: number;
+  height: number;
+  weight: number;
+  bmi: number;
+  preferredProgram: string;
   recommendedPlan: string;
   selectedProductKey: ProductKey | "";
   selectedProductTitle: string;
@@ -54,17 +46,18 @@ export interface BasmaFitLead {
   createdAt: string;
 }
 
-export const DEFAULT_CURRENT_WEIGHT = 70;
-export const DEFAULT_TARGET_WEIGHT = 65;
+export const DEFAULT_AGE = 25;
+export const DEFAULT_HEIGHT = 160;
+export const DEFAULT_WEIGHT = 60;
 
 export const EMPTY_ANSWERS: QuizAnswers = {
   goal: "",
-  trainingLocation: "",
+  trainingPreference: "",
   level: "",
-  trainingDays: "",
-  mainObstacle: "",
-  programType: "",
-  ageRange: "",
-  currentWeight: DEFAULT_CURRENT_WEIGHT,
-  targetWeight: DEFAULT_TARGET_WEIGHT,
+  weeklyDays: "",
+  gender: "",
+  age: DEFAULT_AGE,
+  height: DEFAULT_HEIGHT,
+  weight: DEFAULT_WEIGHT,
+  preferredProgram: "",
 };

@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { HeroScreen } from "./HeroScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { LoadingScreen } from "./LoadingScreen";
 import { ResultScreen } from "./ResultScreen";
 import { QUIZ_STEPS, validateStep } from "@/lib/quiz-steps";
-import { getRecommendedPlanLabel } from "@/lib/recommendation";
 import { EMPTY_ANSWERS, ProductKey, QuizAnswers } from "@/lib/types";
 import { buildLead, loadQuizAnswers, saveLead, saveQuizAnswers } from "@/lib/storage";
 import { PRODUCTS } from "@/lib/products";
@@ -15,14 +13,14 @@ import { trackEvent } from "@/lib/analytics";
 
 type Screen = "hero" | "quiz" | "loading" | "result";
 
-const RESULT_TRANSITION_MS = 2600;
+const RESULT_TRANSITION_MS = 1500;
 
 export function QuizFunnel() {
-  const router = useRouter();
   const [screen, setScreen] = useState<Screen>("hero");
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [error, setError] = useState<string | null>(null);
+  const [linkNotice, setLinkNotice] = useState(false);
 
   useEffect(() => {
     const saved = loadQuizAnswers();
@@ -33,11 +31,6 @@ export function QuizFunnel() {
   }, []);
 
   const currentStep = QUIZ_STEPS[stepIndex];
-
-  const recommendedPlanLabel = useMemo(
-    () => getRecommendedPlanLabel(answers.goal, answers.trainingLocation),
-    [answers.goal, answers.trainingLocation]
-  );
 
   function handleChange(key: keyof QuizAnswers, value: string | number) {
     setAnswers((prev) => {
@@ -51,14 +44,12 @@ export function QuizFunnel() {
   function goToResult(finalAnswers: QuizAnswers) {
     setScreen("loading");
     saveQuizAnswers(finalAnswers);
-    const plan = getRecommendedPlanLabel(finalAnswers.goal, finalAnswers.trainingLocation);
     trackEvent("quiz_completed", {
       goal: finalAnswers.goal,
-      trainingLocation: finalAnswers.trainingLocation,
+      trainingPreference: finalAnswers.trainingPreference,
       level: finalAnswers.level,
-      trainingDays: finalAnswers.trainingDays,
-      programType: finalAnswers.programType,
-      recommendedPlan: plan,
+      weeklyDays: finalAnswers.weeklyDays,
+      preferredProgram: finalAnswers.preferredProgram,
     });
 
     window.setTimeout(() => {
@@ -92,14 +83,20 @@ export function QuizFunnel() {
     const product = PRODUCTS[key];
     if (!product) return;
 
-    const lead = buildLead(answers, recommendedPlanLabel, key, product.title, product.price ?? "");
+    const lead = buildLead(answers, product.title, key, product.title, product.price);
     saveLead(lead);
     trackEvent("product_selected", {
       productKey: key,
       productTitle: product.title,
     });
 
-    router.push(`/checkout/${key}`);
+    if (!product.link || product.link.startsWith("PLACE_")) {
+      setLinkNotice(true);
+      window.setTimeout(() => setLinkNotice(false), 3500);
+      return;
+    }
+
+    window.location.href = product.link;
   }
 
   return (
@@ -125,6 +122,14 @@ export function QuizFunnel() {
 
       {screen === "result" && (
         <ResultScreen answers={answers} onSelectProduct={handleSelectProduct} />
+      )}
+
+      {linkNotice && (
+        <div className="animate-fade-in pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-6">
+          <div className="pointer-events-auto rounded-2xl border border-yellow/40 bg-card-soft px-5 py-3 text-center text-sm font-bold text-yellow shadow-xl">
+            رابط هذا البرنامج غير متوفر حاليًا
+          </div>
+        </div>
       )}
     </div>
   );

@@ -73,6 +73,14 @@ input[type="number"] {
   border-radius: 999px;
 }
 
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes fade-slide-in {
   from {
     opacity: 0;

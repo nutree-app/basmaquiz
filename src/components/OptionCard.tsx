@@ -1,9 +1,11 @@
 export function OptionCard({
   label,
+  icon,
   selected,
   onClick,
 }: {
   label: string;
+  icon?: string;
   selected: boolean;
   onClick: () => void;
 }) {
@@ -17,7 +19,10 @@ export function OptionCard({
           : "border-border bg-card text-foreground hover:border-muted"
       }`}
     >
-      <span>{label}</span>
+      <span className="flex items-center gap-3">
+        {icon && <span className="text-2xl">{icon}</span>}
+        <span>{label}</span>
+      </span>
       <span
         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
           selected ? "border-pink bg-pink" : "border-border"

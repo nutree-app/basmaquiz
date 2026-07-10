@@ -12,7 +12,7 @@ import { BasmaFitLead } from "@/lib/types";
 
 const SUMMARY_ROWS: { label: string; key: keyof BasmaFitLead }[] = [
   { label: "الهدف", key: "goal" },
-  { label: "مكان التمرين", key: "trainingLocation" },
+  { label: "مكان التمرين", key: "trainingPreference" },
   { label: "المنتج المختار", key: "selectedProductTitle" },
   { label: "السعر", key: "selectedProductPrice" },
 ];

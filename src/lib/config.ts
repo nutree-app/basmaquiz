@@ -3,15 +3,14 @@
 // Payment & contact configuration - edit only here
 // ============================================================
 
-// روابط الدفع المباشر من سلة (Salla Instant Purchase)
-// ضعي رابط كل باقة هنا بعد إنشائه من لوحة تحكم سلة
-export const SALLA_CHECKOUT_LINKS = {
-  ONE_MONTH: "PUT_SALLA_INSTANT_CHECKOUT_ONE_MONTH_HERE",
-  TALTI_GHEIR: "PUT_SALLA_INSTANT_CHECKOUT_TALTI_GHEIR_HERE",
-  CHALLENGE_90: "PUT_SALLA_INSTANT_CHECKOUT_CHALLENGE_90_HERE",
+// روابط صفحات المنتجات في متجر بسمة فت
+// ضعي رابط كل برنامج هنا
+export const PRODUCT_LINKS = {
+  GYM: "PLACE_GYM_PRODUCT_URL_HERE",
+  HOME: "PLACE_HOME_PRODUCT_URL_HERE",
 } as const;
 
-export type SallaCheckoutKey = keyof typeof SALLA_CHECKOUT_LINKS;
+export type ProductLinkKey = keyof typeof PRODUCT_LINKS;
 
 // رقم واتساب بسمة فت
 export const WHATSAPP_NUMBER = "966559964709";
