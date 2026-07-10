@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
+import { SITE_URL } from "@/lib/config";
 
 const cairo = Cairo({
   variable: "--font-cairo",
@@ -9,6 +10,7 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "بسمة فت | Basma Fit",
   description: "اعرفي الخطة المناسبة لك مع بسمة فت - خطة تمرين وتغذية حسب هدفك",
 };

@@ -5,26 +5,30 @@ function buildWhatsAppUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-export function getQuizCompletionWhatsAppUrl(lead: BasmaFitLead): string {
-  const message = `مرحبا، انا جاوبت استمارة بسمة فت وابغى اكمل التسجيل.
-الاسم: ${lead.name}
-الخطة المناسبة: ${lead.recommendedPlan}
-الباقة: ${lead.selectedPackageTitle}
-الايميل: ${lead.email}
-رقم الجوال: ${lead.phone}`;
+export function getSupportWhatsAppUrl(lead: BasmaFitLead | null): string {
+  if (!lead || !lead.selectedPackageTitle) {
+    return buildWhatsAppUrl("مرحبًا، أحتاج مساعدة في إكمال الاشتراك في BasmaFit.");
+  }
+
+  const message = `مرحبًا، أكملت اختبار BasmaFit واخترت باقة ${lead.selectedPackageTitle}.
+
+هدفي: ${lead.goal}
+مكان التمرين: ${lead.trainingLocation}
+المستوى: ${lead.level}
+عدد أيام التمرين: ${lead.trainingDays}
+
+أحتاج مساعدة في إكمال الاشتراك والدفع.`;
   return buildWhatsAppUrl(message);
 }
 
-export function getSuccessPageWhatsAppUrl(lead: BasmaFitLead): string {
-  const message = `مرحبا، انا اشتركت في برنامج بسمة فت وابغى اكمل التسجيل.
+export function getInvoiceWhatsAppUrl(lead: BasmaFitLead): string {
+  const message = `مرحبًا، أكملت الدفع لباقة ${lead.selectedPackageTitle} في BasmaFit.
 
-الاسم: ${lead.name}
-الخطة المناسبة: ${lead.recommendedPlan}
-الباقة: ${lead.selectedPackageTitle}
-السعر: ${lead.selectedPackagePrice}
-الايميل: ${lead.email}
-رقم الجوال: ${lead.phone}
+هدفي: ${lead.goal}
+مكان التمرين: ${lead.trainingLocation}
+المستوى: ${lead.level}
+عدد أيام التمرين: ${lead.trainingDays}
 
-هذه فاتورة الدفع.`;
+هذه فاتورة الدفع، بانتظار تفعيل اشتراكي.`;
   return buildWhatsAppUrl(message);
 }

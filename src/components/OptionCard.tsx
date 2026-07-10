@@ -38,30 +38,3 @@ export function OptionCard({
     </button>
   );
 }
-
-export function VisualOptionCard({
-  label,
-  emoji,
-  selected,
-  onClick,
-}: {
-  label: string;
-  emoji: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-2 rounded-2xl border-2 px-4 py-6 text-center transition-all active:scale-[0.98] ${
-        selected
-          ? "glow-pink border-pink bg-pink/10"
-          : "border-border bg-card hover:border-muted"
-      }`}
-    >
-      <span className="text-3xl">{emoji}</span>
-      <span className="text-sm font-bold text-foreground">{label}</span>
-    </button>
-  );
-}

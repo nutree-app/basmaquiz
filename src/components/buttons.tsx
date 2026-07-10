@@ -46,12 +46,21 @@ export function BackButton({ className = "", ...props }: ButtonHTMLAttributes<HT
   );
 }
 
-export function WhatsAppButton({ href, children }: { href: string; children: ReactNode }) {
+export function WhatsAppButton({
+  href,
+  children,
+  onClick,
+}: {
+  href: string;
+  children: ReactNode;
+  onClick?: () => void;
+}) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={onClick}
       className="flex w-full items-center justify-center gap-2 rounded-2xl bg-whatsapp px-6 py-4 text-base font-extrabold text-white shadow-lg shadow-black/20 transition-transform active:scale-[0.98]"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

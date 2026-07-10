@@ -3,32 +3,26 @@ import { PrimaryButton, SecondaryButton } from "./buttons";
 
 export function PricingCard({
   pkg,
+  recommended,
   onSelect,
-  loading,
 }: {
   pkg: PricingPackage;
+  recommended: boolean;
   onSelect: () => void;
-  loading: boolean;
 }) {
-  const Button = pkg.highlighted ? PrimaryButton : SecondaryButton;
+  const Button = recommended ? PrimaryButton : SecondaryButton;
 
   return (
     <div
       className={`relative flex flex-col rounded-3xl border p-6 transition-transform ${
-        pkg.highlighted
+        recommended
           ? "glow-pink z-10 scale-[1.03] border-pink bg-card-soft"
           : "border-border bg-card"
       }`}
     >
-      {pkg.badge && (
-        <span
-          className={`absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full px-4 py-1 text-xs font-extrabold ${
-            pkg.highlighted
-              ? "bg-pink text-white"
-              : "bg-yellow text-yellow-text"
-          }`}
-        >
-          {pkg.badge}
+      {recommended && (
+        <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
+          الأكثر طلبًا
         </span>
       )}
 
@@ -37,6 +31,9 @@ export function PricingCard({
       </h3>
       <p className="mt-2 text-center text-3xl font-black text-yellow">
         {pkg.price}
+      </p>
+      <p className="mt-1 text-center text-sm font-bold text-muted">
+        {pkg.duration}
       </p>
       <p className="mt-3 text-center text-sm leading-6 text-muted">
         {pkg.description}
@@ -67,9 +64,7 @@ export function PricingCard({
       </ul>
 
       <div className="mt-6">
-        <Button onClick={onSelect} disabled={loading}>
-          {loading ? "جارٍ التحويل..." : pkg.buttonLabel}
-        </Button>
+        <Button onClick={onSelect}>{pkg.buttonLabel}</Button>
       </div>
     </div>
   );

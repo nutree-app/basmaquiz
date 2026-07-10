@@ -14,7 +14,7 @@ export function LoadingScreen() {
         </svg>
       </div>
       <p className="text-lg font-extrabold text-foreground">
-        جاري تحديد الخطة المناسبة لك...
+        جاري تجهيز أفضل خطة تناسب هدفك…
       </p>
     </div>
   );

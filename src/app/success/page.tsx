@@ -6,15 +6,15 @@ import { AppShell } from "@/components/AppShell";
 import { Logo } from "@/components/Logo";
 import { WhatsAppButton } from "@/components/buttons";
 import { loadLead } from "@/lib/storage";
-import { getSuccessPageWhatsAppUrl } from "@/lib/whatsapp";
+import { getInvoiceWhatsAppUrl } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/analytics";
 import { BasmaFitLead } from "@/lib/types";
 
 const SUMMARY_ROWS: { label: string; key: keyof BasmaFitLead }[] = [
-  { label: "الاسم", key: "name" },
-  { label: "الخطة المناسبة", key: "recommendedPlan" },
+  { label: "الهدف", key: "goal" },
+  { label: "مكان التمرين", key: "trainingLocation" },
   { label: "الباقة المختارة", key: "selectedPackageTitle" },
-  { label: "الايميل", key: "email" },
-  { label: "رقم الواتساب", key: "phone" },
+  { label: "السعر", key: "selectedPackagePrice" },
 ];
 
 export default function SuccessPage() {
@@ -22,9 +22,17 @@ export default function SuccessPage() {
   const loaded = lead !== undefined;
 
   useEffect(() => {
-    // localStorage only exists client-side, so the lead is read once after mount.
+    const loadedLead = loadLead();
+    // localStorage فقط متاح على المتصفح، لذا نقرأ الفاتورة بعد التركيب
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLead(loadLead());
+    setLead(loadedLead);
+
+    if (loadedLead) {
+      trackEvent("payment_success", {
+        packageKey: loadedLead.selectedPackageKey,
+        packageTitle: loadedLead.selectedPackageTitle,
+      });
+    }
   }, []);
 
   return (
@@ -36,11 +44,10 @@ export default function SuccessPage() {
 
         <div className="mt-10 text-center">
           <h1 className="text-2xl font-black leading-tight text-foreground">
-            تم الدفع بنجاح؟
+            تم الدفع بنجاح
           </h1>
           <p className="mt-3 text-sm leading-7 text-muted">
-            ارسلي الفاتورة على الواتساب عشان نفعّل تسجيلك ونرسل لك الخطوات
-            التالية.
+            خطتك جاهزة تقريبًا، بس نحتاج نتأكد من الفاتورة عشان نفعّل اشتراكك.
           </p>
         </div>
 
@@ -63,17 +70,26 @@ export default function SuccessPage() {
         {loaded && !lead && (
           <div className="mt-8 rounded-2xl border border-border bg-card p-5 text-center text-sm leading-6 text-muted">
             ما لقينا بيانات محفوظة على هذا الجهاز. تقدرين ترسلين الفاتورة
-            مباشرة على الواتساب، أو تعبين الاستمارة من جديد.
+            مباشرة على الواتساب، أو تكملين الاختبار من جديد.
           </div>
         )}
+
+        <div className="mt-8 rounded-2xl border border-pink/40 bg-pink/10 p-5 text-center">
+          <p className="text-sm font-extrabold text-pink">الخطوة التالية</p>
+          <p className="mt-2 text-sm leading-6 text-foreground">
+            ارسلي لقطة من الفاتورة على واتساب وبنرسل لك خطوات البدء خلال
+            دقائق.
+          </p>
+        </div>
 
         <div className="mt-8 flex flex-col gap-3">
           <WhatsAppButton
             href={
               lead
-                ? getSuccessPageWhatsAppUrl(lead)
+                ? getInvoiceWhatsAppUrl(lead)
                 : "https://wa.me/966559964709"
             }
+            onClick={() => trackEvent("whatsapp_click", { context: "success" })}
           >
             ارسلي الفاتورة على واتساب
           </WhatsAppButton>
@@ -82,7 +98,7 @@ export default function SuccessPage() {
             href="/start"
             className="w-full rounded-2xl border border-border bg-transparent px-6 py-4 text-center text-base font-bold text-foreground transition-colors active:scale-[0.98]"
           >
-            تعبئة الاستمارة من جديد
+            تعبئة الاختبار من جديد
           </Link>
         </div>
       </div>

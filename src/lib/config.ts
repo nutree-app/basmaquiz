@@ -15,3 +15,6 @@ export type SallaCheckoutKey = keyof typeof SALLA_CHECKOUT_LINKS;
 
 // رقم واتساب بسمة فت
 export const WHATSAPP_NUMBER = "966559964709";
+
+// نطاق الإنتاج - يُستخدم للروابط والميتاداتا، لا نستخدم localhost في أي مكان
+export const SITE_URL = "https://plan.basmafit.com";

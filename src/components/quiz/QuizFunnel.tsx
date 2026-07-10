@@ -1,43 +1,46 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { HeroScreen } from "./HeroScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { LoadingScreen } from "./LoadingScreen";
 import { ResultScreen } from "./ResultScreen";
-import { getVisibleSteps } from "@/lib/quiz-steps";
+import { QUIZ_STEPS, validateStep } from "@/lib/quiz-steps";
 import { getRecommendedPlan } from "@/lib/recommendation";
 import { EMPTY_ANSWERS, PackageKey, QuizAnswers, RecommendedPlan } from "@/lib/types";
-import { buildLead, saveLead, saveQuizAnswers } from "@/lib/storage";
+import { buildLead, loadQuizAnswers, saveLead, saveQuizAnswers } from "@/lib/storage";
 import { PRICING_PACKAGES } from "@/lib/packages";
-import { SALLA_CHECKOUT_LINKS } from "@/lib/config";
-import { getQuizCompletionWhatsAppUrl } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/analytics";
 
 type Screen = "hero" | "quiz" | "loading" | "result";
 
 export function QuizFunnel() {
+  const router = useRouter();
   const [screen, setScreen] = useState<Screen>("hero");
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [error, setError] = useState<string | null>(null);
-  const [loadingKey, setLoadingKey] = useState<PackageKey | null>(null);
-  const [linkNotice, setLinkNotice] = useState(false);
 
-  const visibleSteps = useMemo(() => getVisibleSteps(answers), [answers]);
-  const currentStep = visibleSteps[stepIndex];
+  useEffect(() => {
+    const saved = loadQuizAnswers();
+    if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAnswers(saved);
+    }
+  }, []);
+
+  const currentStep = QUIZ_STEPS[stepIndex];
 
   const recommendedPlan: RecommendedPlan = useMemo(
-    () => getRecommendedPlan(answers.goal, answers.workoutPlace),
-    [answers.goal, answers.workoutPlace]
+    () => getRecommendedPlan(answers.goal, answers.trainingLocation),
+    [answers.goal, answers.trainingLocation]
   );
 
   function handleChange(key: keyof QuizAnswers, value: string) {
     setAnswers((prev) => {
       const next = { ...prev, [key]: value };
-      // إعادة ضبط تفاصيل الإصابة إذا غيّرت إجابتها إلى "لا"
-      if (key === "injury" && value === "لا") {
-        next.injuryDetails = "";
-      }
+      saveQuizAnswers(next);
       return next;
     });
     setError(null);
@@ -46,9 +49,15 @@ export function QuizFunnel() {
   function goToResult(finalAnswers: QuizAnswers) {
     setScreen("loading");
     saveQuizAnswers(finalAnswers);
-    const plan = getRecommendedPlan(finalAnswers.goal, finalAnswers.workoutPlace);
-    const lead = buildLead(finalAnswers, plan);
-    console.log(lead);
+    const plan = getRecommendedPlan(finalAnswers.goal, finalAnswers.trainingLocation);
+    trackEvent("quiz_completed", {
+      goal: finalAnswers.goal,
+      trainingLocation: finalAnswers.trainingLocation,
+      level: finalAnswers.level,
+      trainingDays: finalAnswers.trainingDays,
+      mainPreference: finalAnswers.mainPreference,
+      recommendedPlan: plan,
+    });
 
     window.setTimeout(() => {
       setScreen("result");
@@ -56,13 +65,13 @@ export function QuizFunnel() {
   }
 
   function handleNext() {
-    const validationError = currentStep.validate(answers);
+    const validationError = validateStep(currentStep, answers);
     if (validationError) {
       setError(validationError);
       return;
     }
 
-    if (stepIndex === visibleSteps.length - 1) {
+    if (stepIndex === QUIZ_STEPS.length - 1) {
       goToResult(answers);
       return;
     }
@@ -81,20 +90,15 @@ export function QuizFunnel() {
     const pkg = PRICING_PACKAGES.find((p) => p.key === key);
     if (!pkg) return;
 
-    const lead = buildLead(answers, recommendedPlan, pkg.title, pkg.price);
-    saveQuizAnswers(answers);
+    const lead = buildLead(answers, recommendedPlan, key, pkg.title, pkg.price);
     saveLead(lead);
-    console.log(lead);
+    trackEvent("package_selected", {
+      packageKey: key,
+      packageTitle: pkg.title,
+      price: pkg.price,
+    });
 
-    const checkoutUrl = SALLA_CHECKOUT_LINKS[key];
-    if (!checkoutUrl || checkoutUrl.startsWith("PUT_SALLA_INSTANT_CHECKOUT")) {
-      setLinkNotice(true);
-      window.setTimeout(() => setLinkNotice(false), 3500);
-      return;
-    }
-
-    setLoadingKey(key);
-    window.location.href = checkoutUrl;
+    router.push(`/checkout/${key}`);
   }
 
   return (
@@ -106,11 +110,10 @@ export function QuizFunnel() {
       {screen === "quiz" && currentStep && (
         <QuestionScreen
           step={currentStep}
-          stepKey={currentStep.id}
           answers={answers}
           error={error}
           stepIndex={stepIndex}
-          totalSteps={visibleSteps.length}
+          totalSteps={QUIZ_STEPS.length}
           onChange={handleChange}
           onNext={handleNext}
           onBack={handleBack}
@@ -124,19 +127,7 @@ export function QuizFunnel() {
           answers={answers}
           recommendedPlan={recommendedPlan}
           onSelectPackage={handleSelectPackage}
-          loadingKey={loadingKey}
-          whatsappHelperUrl={getQuizCompletionWhatsAppUrl(
-            buildLead(answers, recommendedPlan)
-          )}
         />
-      )}
-
-      {linkNotice && (
-        <div className="animate-fade-in pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-6">
-          <div className="pointer-events-auto rounded-2xl border border-yellow/40 bg-card-soft px-5 py-3 text-center text-sm font-bold text-yellow shadow-xl">
-            رابط الدفع لهذه الباقة لم يُضاف بعد
-          </div>
-        </div>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import { BasmaFitLead, QuizAnswers, RecommendedPlan } from "./types";
+import { BasmaFitLead, PackageKey, QuizAnswers, RecommendedPlan } from "./types";
 
 const ANSWERS_KEY = "basmafit_quiz_answers";
 const LEAD_KEY = "basmafit_lead";
@@ -22,26 +22,18 @@ export function loadQuizAnswers(): QuizAnswers | null {
 export function buildLead(
   answers: QuizAnswers,
   recommendedPlan: RecommendedPlan,
+  selectedPackageKey: PackageKey | "" = "",
   selectedPackageTitle = "",
   selectedPackagePrice = ""
 ): BasmaFitLead {
   return {
-    name: answers.name,
-    phone: answers.phone,
-    email: answers.email,
-    age: answers.age,
-    weight: answers.weight,
-    height: answers.height,
     goal: answers.goal,
-    workoutPlace: answers.workoutPlace,
+    trainingLocation: answers.trainingLocation,
     level: answers.level,
     trainingDays: answers.trainingDays,
-    injury: answers.injury,
-    injuryDetails: answers.injuryDetails,
-    pregnancyStatus: answers.pregnancyStatus,
-    dietPreference: answers.dietPreference,
-    bodyGoal: answers.bodyGoal,
+    mainPreference: answers.mainPreference,
     recommendedPlan,
+    selectedPackageKey,
     selectedPackageTitle,
     selectedPackagePrice,
     createdAt: new Date().toISOString(),

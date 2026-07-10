@@ -1,30 +1,23 @@
-import { Goal, QuizAnswers, RecommendedPlan, WorkoutPlace } from "./types";
-
-const HOME_OR_CLUB_GOALS: Goal[] = ["خسارة الدهون", "شد الجسم وتحسين الشكل"];
+import { Goal, PackageKey, QuizAnswers, RecommendedPlan, TrainingLocation } from "./types";
 
 export function getRecommendedPlan(
   goal: Goal | "",
-  workoutPlace: WorkoutPlace | ""
+  trainingLocation: TrainingLocation | ""
 ): RecommendedPlan {
-  if (goal === "لياقة وصحة عامة") {
-    return "تحسين الجسم واللياقة";
-  }
+  const isCutting = goal === "تنشيف وخسارة الدهون";
+  const isClub = trainingLocation === "النادي";
 
-  if (goal && HOME_OR_CLUB_GOALS.includes(goal)) {
-    return workoutPlace === "في النادي" ? "تنشيف نادي" : "تنشيف منزلي";
-  }
-
-  if (goal === "زيادة الوزن / تضخيم") {
-    return workoutPlace === "في النادي" ? "تضخيم نادي" : "تضخيم منزلي";
-  }
-
-  return "تحسين الجسم واللياقة";
+  if (isCutting) return isClub ? "تنشيف نادي" : "تنشيف منزلي";
+  return isClub ? "تضخيم نادي" : "تضخيم منزلي";
 }
 
-export function needsHealthNotice(answers: QuizAnswers): boolean {
-  return (
-    answers.injury === "نعم" ||
-    answers.pregnancyStatus === "حامل" ||
-    answers.pregnancyStatus === "مرضعة"
-  );
+export function getRecommendedPackage(answers: QuizAnswers): PackageKey {
+  if (answers.mainPreference === "متابعة وتحفيز مستمر") return "CHALLENGE_90";
+  if (answers.trainingDays === "5 أيام" || answers.trainingDays === "6 أيام") {
+    return "CHALLENGE_90";
+  }
+  if (answers.trainingDays === "3 أيام" && answers.level === "مبتدئة") {
+    return "ONE_MONTH";
+  }
+  return "TALTI_GHEIR";
 }
