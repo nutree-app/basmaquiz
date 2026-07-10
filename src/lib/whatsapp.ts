@@ -6,11 +6,11 @@ function buildWhatsAppUrl(message: string): string {
 }
 
 export function getSupportWhatsAppUrl(lead: BasmaFitLead | null): string {
-  if (!lead || !lead.selectedPackageTitle) {
+  if (!lead || !lead.selectedProductTitle) {
     return buildWhatsAppUrl("مرحبًا، أحتاج مساعدة في إكمال الاشتراك في BasmaFit.");
   }
 
-  const message = `مرحبًا، أكملت اختبار BasmaFit واخترت باقة ${lead.selectedPackageTitle}.
+  const message = `مرحبًا، أكملت اختبار BasmaFit واخترت ${lead.selectedProductTitle}.
 
 هدفي: ${lead.goal}
 مكان التمرين: ${lead.trainingLocation}
@@ -22,7 +22,7 @@ export function getSupportWhatsAppUrl(lead: BasmaFitLead | null): string {
 }
 
 export function getInvoiceWhatsAppUrl(lead: BasmaFitLead): string {
-  const message = `مرحبًا، أكملت الدفع لباقة ${lead.selectedPackageTitle} في BasmaFit.
+  const message = `مرحبًا، أكملت الدفع لـ ${lead.selectedProductTitle} في BasmaFit.
 
 هدفي: ${lead.goal}
 مكان التمرين: ${lead.trainingLocation}

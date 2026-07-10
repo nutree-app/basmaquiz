@@ -1,14 +1,13 @@
 "use client";
 
-import { Suspense, use, useEffect, useMemo, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { Logo } from "@/components/Logo";
 import { PrimaryButton, WhatsAppButton } from "@/components/buttons";
-import { PRICING_PACKAGES } from "@/lib/packages";
-import { SALLA_CHECKOUT_LINKS } from "@/lib/config";
-import { BasmaFitLead, PackageKey } from "@/lib/types";
+import { PRODUCTS } from "@/lib/products";
+import { BasmaFitLead, ProductKey } from "@/lib/types";
 import { loadLead } from "@/lib/storage";
 import { getSupportWhatsAppUrl } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
@@ -20,8 +19,8 @@ const SUMMARY_ROWS: { label: string; key: keyof BasmaFitLead }[] = [
   { label: "عدد أيام التمرين", key: "trainingDays" },
 ];
 
-function isValidPackageKey(value: string): value is PackageKey {
-  return PRICING_PACKAGES.some((p) => p.key === value);
+function isValidProductKey(value: string): value is ProductKey {
+  return Object.prototype.hasOwnProperty.call(PRODUCTS, value);
 }
 
 export default function CheckoutPage({
@@ -48,10 +47,7 @@ function CheckoutContent({
   const [lead, setLead] = useState<BasmaFitLead | null | undefined>(undefined);
   const [linkNotice, setLinkNotice] = useState(false);
 
-  const pkg = useMemo(
-    () => (isValidPackageKey(key) ? PRICING_PACKAGES.find((p) => p.key === key) : undefined),
-    [key]
-  );
+  const product = isValidProductKey(key) ? PRODUCTS[key] : undefined;
 
   useEffect(() => {
     // localStorage فقط متاح على المتصفح، لذا نقرأ الفاتورة بعد التركيب
@@ -60,22 +56,22 @@ function CheckoutContent({
   }, []);
 
   useEffect(() => {
-    if (!pkg) return;
-    trackEvent("checkout_opened", { packageKey: pkg.key, packageTitle: pkg.title });
+    if (!product) return;
+    trackEvent("checkout_opened", { productKey: product.key, productTitle: product.title });
 
     if (status === "failed") {
-      trackEvent("payment_failed", { packageKey: pkg.key, packageTitle: pkg.title });
+      trackEvent("payment_failed", { productKey: product.key, productTitle: product.title });
     } else if (status === "cancelled") {
-      trackEvent("payment_cancelled", { packageKey: pkg.key, packageTitle: pkg.title });
+      trackEvent("payment_cancelled", { productKey: product.key, productTitle: product.title });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pkg?.key, status]);
+  }, [product?.key, status]);
 
-  if (!pkg) {
+  if (!product) {
     return (
       <AppShell>
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-          <p className="text-lg font-bold text-foreground">هذه الباقة غير موجودة</p>
+          <p className="text-lg font-bold text-foreground">هذا المنتج غير موجود</p>
           <Link
             href="/start"
             className="rounded-2xl bg-yellow px-6 py-3 font-extrabold text-yellow-text"
@@ -88,17 +84,15 @@ function CheckoutContent({
   }
 
   function handlePay() {
-    if (!pkg) return;
-    trackEvent("payment_button_click", { packageKey: pkg.key, packageTitle: pkg.title });
+    trackEvent("payment_button_click", { productKey: product!.key, productTitle: product!.title });
 
-    const checkoutUrl = SALLA_CHECKOUT_LINKS[pkg.key];
-    if (!checkoutUrl || checkoutUrl.startsWith("PUT_SALLA_INSTANT_CHECKOUT")) {
+    if (!product!.link) {
       setLinkNotice(true);
       window.setTimeout(() => setLinkNotice(false), 3500);
       return;
     }
 
-    window.location.href = checkoutUrl;
+    window.location.href = product!.link;
   }
 
   const showIncomplete = status === "failed" || status === "cancelled";
@@ -121,14 +115,20 @@ function CheckoutContent({
         <div className="mt-6 rounded-3xl border border-border bg-card p-6">
           <p className="text-center text-sm font-bold text-pink">فاتورتك</p>
           <h1 className="mt-2 text-center text-2xl font-black text-foreground">
-            {pkg.title}
+            {product.title}
           </h1>
-          <p className="mt-2 text-center text-3xl font-black text-yellow">
-            {pkg.price}
-          </p>
-          <p className="mt-1 text-center text-sm font-bold text-muted">
-            {pkg.duration}
-          </p>
+
+          {product.price && (
+            <p className="mt-2 text-center text-3xl font-black text-yellow">
+              {product.price}
+            </p>
+          )}
+
+          {product.duration && (
+            <p className="mt-1 text-center text-sm font-bold text-muted">
+              المدة: {product.duration}
+            </p>
+          )}
 
           {lead && (
             <div className="mt-6 flex flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border">
@@ -148,12 +148,12 @@ function CheckoutContent({
         </div>
 
         <div className="mt-8">
-          <PrimaryButton onClick={handlePay}>ادفعي الآن</PrimaryButton>
+          <PrimaryButton onClick={handlePay}>استمري للشراء</PrimaryButton>
         </div>
 
         {linkNotice && (
           <p className="mt-3 text-center text-sm font-bold text-yellow animate-fade-in">
-            رابط الدفع لهذه الباقة لم يُضاف بعد
+            رابط هذا المنتج غير متوفر حاليًا
           </p>
         )}
 
@@ -168,7 +168,7 @@ function CheckoutContent({
             <WhatsAppButton
               href={getSupportWhatsAppUrl(lead ?? null)}
               onClick={() =>
-                trackEvent("whatsapp_click", { context: "checkout", packageKey: pkg.key })
+                trackEvent("whatsapp_click", { context: "checkout", productKey: product.key })
               }
             >
               تواصل واتساب

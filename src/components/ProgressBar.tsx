@@ -11,7 +11,7 @@ export function ProgressBar({
     <div className="w-full">
       <div className="mb-2 flex items-center justify-between text-xs text-muted">
         <span>
-          سؤال {current + 1} من {total}
+          الخطوة {current + 1} من {total}
         </span>
         <span>{percent}٪</span>
       </div>

@@ -9,10 +9,10 @@ export function HeroScreen({ onStart }: { onStart: () => void }) {
 
         <div className="mt-12 flex flex-col items-center text-center">
           <h1 className="text-3xl font-black leading-[1.4] text-foreground">
-            اعرفي الخطة المناسبة لك
+            خلينا نختار لك البرنامج الأنسب
           </h1>
           <p className="mt-4 text-base leading-7 text-muted">
-            جاوبي على كم سؤال بسيط، ونحدد لك البرنامج الأنسب حسب هدفك ومكان
+            جاوبي على أسئلة بسيطة، وبنرشح لك البرنامج المناسب لهدفك وطريقة
             تمرينك.
           </p>
         </div>

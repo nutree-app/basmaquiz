@@ -13,8 +13,8 @@ import { BasmaFitLead } from "@/lib/types";
 const SUMMARY_ROWS: { label: string; key: keyof BasmaFitLead }[] = [
   { label: "الهدف", key: "goal" },
   { label: "مكان التمرين", key: "trainingLocation" },
-  { label: "الباقة المختارة", key: "selectedPackageTitle" },
-  { label: "السعر", key: "selectedPackagePrice" },
+  { label: "المنتج المختار", key: "selectedProductTitle" },
+  { label: "السعر", key: "selectedProductPrice" },
 ];
 
 export default function SuccessPage() {
@@ -29,8 +29,8 @@ export default function SuccessPage() {
 
     if (loadedLead) {
       trackEvent("payment_success", {
-        packageKey: loadedLead.selectedPackageKey,
-        packageTitle: loadedLead.selectedPackageTitle,
+        productKey: loadedLead.selectedProductKey,
+        productTitle: loadedLead.selectedProductTitle,
       });
     }
   }, []);

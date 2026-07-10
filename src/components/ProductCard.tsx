@@ -1,0 +1,82 @@
+import { Product } from "@/lib/products";
+import { PrimaryButton, SecondaryButton } from "./buttons";
+
+export function ProductCard({
+  product,
+  description,
+  onSelect,
+}: {
+  product: Product;
+  description?: string;
+  onSelect: () => void;
+}) {
+  const highlighted = Boolean(product.badge);
+  const Button = highlighted ? PrimaryButton : SecondaryButton;
+  const resolvedDescription = description ?? product.description;
+
+  return (
+    <div
+      className={`relative flex flex-col rounded-3xl border p-6 transition-transform ${
+        highlighted
+          ? "glow-pink z-10 scale-[1.03] border-pink bg-card-soft"
+          : "border-border bg-card"
+      }`}
+    >
+      {product.badge && (
+        <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
+          {product.badge}
+        </span>
+      )}
+
+      <h3 className="mt-2 text-center text-xl font-extrabold text-foreground">
+        {product.title}
+      </h3>
+
+      {product.price && (
+        <p className="mt-2 text-center text-3xl font-black text-yellow">
+          {product.price}
+        </p>
+      )}
+
+      {product.duration && (
+        <p className="mt-1 text-center text-sm font-bold text-muted">
+          المدة: {product.duration}
+        </p>
+      )}
+
+      <p className="mt-3 text-center text-sm leading-6 text-muted">
+        {resolvedDescription}
+      </p>
+
+      {product.features && (
+        <ul className="mt-5 flex flex-col gap-2.5">
+          {product.features.map((feature) => (
+            <li key={feature} className="flex items-start gap-2 text-sm text-foreground">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="mt-0.5 shrink-0"
+              >
+                <circle cx="12" cy="12" r="10" fill="#D64B78" opacity="0.15" />
+                <path
+                  d="M8 12.5l2.5 2.5L16 9.5"
+                  stroke="#D64B78"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="leading-6">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="mt-6">
+        <Button onClick={onSelect}>{product.buttonLabel}</Button>
+      </div>
+    </div>
+  );
+}

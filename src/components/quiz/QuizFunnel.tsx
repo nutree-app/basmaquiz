@@ -7,13 +7,15 @@ import { QuestionScreen } from "./QuestionScreen";
 import { LoadingScreen } from "./LoadingScreen";
 import { ResultScreen } from "./ResultScreen";
 import { QUIZ_STEPS, validateStep } from "@/lib/quiz-steps";
-import { getRecommendedPlan } from "@/lib/recommendation";
-import { EMPTY_ANSWERS, PackageKey, QuizAnswers, RecommendedPlan } from "@/lib/types";
+import { getRecommendedPlanLabel } from "@/lib/recommendation";
+import { EMPTY_ANSWERS, ProductKey, QuizAnswers } from "@/lib/types";
 import { buildLead, loadQuizAnswers, saveLead, saveQuizAnswers } from "@/lib/storage";
-import { PRICING_PACKAGES } from "@/lib/packages";
+import { PRODUCTS } from "@/lib/products";
 import { trackEvent } from "@/lib/analytics";
 
 type Screen = "hero" | "quiz" | "loading" | "result";
+
+const RESULT_TRANSITION_MS = 2600;
 
 export function QuizFunnel() {
   const router = useRouter();
@@ -32,14 +34,14 @@ export function QuizFunnel() {
 
   const currentStep = QUIZ_STEPS[stepIndex];
 
-  const recommendedPlan: RecommendedPlan = useMemo(
-    () => getRecommendedPlan(answers.goal, answers.trainingLocation),
+  const recommendedPlanLabel = useMemo(
+    () => getRecommendedPlanLabel(answers.goal, answers.trainingLocation),
     [answers.goal, answers.trainingLocation]
   );
 
-  function handleChange(key: keyof QuizAnswers, value: string) {
+  function handleChange(key: keyof QuizAnswers, value: string | number) {
     setAnswers((prev) => {
-      const next = { ...prev, [key]: value };
+      const next = { ...prev, [key]: value } as QuizAnswers;
       saveQuizAnswers(next);
       return next;
     });
@@ -49,19 +51,19 @@ export function QuizFunnel() {
   function goToResult(finalAnswers: QuizAnswers) {
     setScreen("loading");
     saveQuizAnswers(finalAnswers);
-    const plan = getRecommendedPlan(finalAnswers.goal, finalAnswers.trainingLocation);
+    const plan = getRecommendedPlanLabel(finalAnswers.goal, finalAnswers.trainingLocation);
     trackEvent("quiz_completed", {
       goal: finalAnswers.goal,
       trainingLocation: finalAnswers.trainingLocation,
       level: finalAnswers.level,
       trainingDays: finalAnswers.trainingDays,
-      mainPreference: finalAnswers.mainPreference,
+      programType: finalAnswers.programType,
       recommendedPlan: plan,
     });
 
     window.setTimeout(() => {
       setScreen("result");
-    }, 1500);
+    }, RESULT_TRANSITION_MS);
   }
 
   function handleNext() {
@@ -86,16 +88,15 @@ export function QuizFunnel() {
     setError(null);
   }
 
-  function handleSelectPackage(key: PackageKey) {
-    const pkg = PRICING_PACKAGES.find((p) => p.key === key);
-    if (!pkg) return;
+  function handleSelectProduct(key: ProductKey) {
+    const product = PRODUCTS[key];
+    if (!product) return;
 
-    const lead = buildLead(answers, recommendedPlan, key, pkg.title, pkg.price);
+    const lead = buildLead(answers, recommendedPlanLabel, key, product.title, product.price ?? "");
     saveLead(lead);
-    trackEvent("package_selected", {
-      packageKey: key,
-      packageTitle: pkg.title,
-      price: pkg.price,
+    trackEvent("product_selected", {
+      productKey: key,
+      productTitle: product.title,
     });
 
     router.push(`/checkout/${key}`);
@@ -123,11 +124,7 @@ export function QuizFunnel() {
       {screen === "loading" && <LoadingScreen />}
 
       {screen === "result" && (
-        <ResultScreen
-          answers={answers}
-          recommendedPlan={recommendedPlan}
-          onSelectPackage={handleSelectPackage}
-        />
+        <ResultScreen answers={answers} onSelectProduct={handleSelectProduct} />
       )}
     </div>
   );

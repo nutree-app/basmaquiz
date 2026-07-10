@@ -1,4 +1,4 @@
-import { BasmaFitLead, PackageKey, QuizAnswers, RecommendedPlan } from "./types";
+import { BasmaFitLead, ProductKey, QuizAnswers } from "./types";
 
 const ANSWERS_KEY = "basmafit_quiz_answers";
 const LEAD_KEY = "basmafit_lead";
@@ -21,21 +21,25 @@ export function loadQuizAnswers(): QuizAnswers | null {
 
 export function buildLead(
   answers: QuizAnswers,
-  recommendedPlan: RecommendedPlan,
-  selectedPackageKey: PackageKey | "" = "",
-  selectedPackageTitle = "",
-  selectedPackagePrice = ""
+  recommendedPlan: string,
+  selectedProductKey: ProductKey | "" = "",
+  selectedProductTitle = "",
+  selectedProductPrice = ""
 ): BasmaFitLead {
   return {
     goal: answers.goal,
     trainingLocation: answers.trainingLocation,
     level: answers.level,
     trainingDays: answers.trainingDays,
-    mainPreference: answers.mainPreference,
+    mainObstacle: answers.mainObstacle,
+    programType: answers.programType,
+    ageRange: answers.ageRange,
+    currentWeight: answers.currentWeight,
+    targetWeight: answers.targetWeight,
     recommendedPlan,
-    selectedPackageKey,
-    selectedPackageTitle,
-    selectedPackagePrice,
+    selectedProductKey,
+    selectedProductTitle,
+    selectedProductPrice,
     createdAt: new Date().toISOString(),
   };
 }

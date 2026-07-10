@@ -1,5 +1,23 @@
+"use client";
+
+import { useState } from "react";
+
 export function Logo({ size = "md" }: { size?: "sm" | "md" }) {
+  const [imgFailed, setImgFailed] = useState(false);
   const isSmall = size === "sm";
+
+  if (!imgFailed) {
+    return (
+      // شعار بسمة فت الرسمي - يوضع في public/logo.png
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src="/logo.png"
+        alt="بسمة فت"
+        onError={() => setImgFailed(true)}
+        className={isSmall ? "h-9 w-auto object-contain" : "h-14 w-auto object-contain"}
+      />
+    );
+  }
 
   return (
     <div className="flex items-center gap-2.5">

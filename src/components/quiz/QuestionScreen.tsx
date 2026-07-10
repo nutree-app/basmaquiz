@@ -4,6 +4,7 @@ import { OptionCard } from "@/components/OptionCard";
 import { ProgressBar } from "@/components/ProgressBar";
 import { QuizStep } from "@/lib/quiz-steps";
 import { QuizAnswers } from "@/lib/types";
+import { WeightStepper } from "./WeightStepper";
 
 export function QuestionScreen({
   step,
@@ -20,7 +21,7 @@ export function QuestionScreen({
   error: string | null;
   stepIndex: number;
   totalSteps: number;
-  onChange: (key: keyof QuizAnswers, value: string) => void;
+  onChange: (key: keyof QuizAnswers, value: string | number) => void;
   onNext: () => void;
   onBack: () => void;
 }) {
@@ -43,25 +44,40 @@ export function QuestionScreen({
         <h2 className="text-2xl font-black leading-tight text-foreground">
           {step.question}
         </h2>
+        {step.helper && (
+          <p className="mt-2 text-sm leading-6 text-muted">{step.helper}</p>
+        )}
 
-        <div className="mt-7 flex flex-col gap-3">
-          {step.options.map((option) => (
-            <OptionCard
-              key={option}
-              label={option}
-              selected={answers[step.key] === option}
-              onClick={() => onChange(step.key, option)}
+        <div className="mt-7">
+          {step.kind === "choice" ? (
+            <div className="flex flex-col gap-3">
+              {step.options.map((option) => (
+                <OptionCard
+                  key={option}
+                  label={option}
+                  selected={answers[step.key] === option}
+                  onClick={() => onChange(step.key, option)}
+                />
+              ))}
+            </div>
+          ) : (
+            <WeightStepper
+              currentWeight={answers.currentWeight}
+              targetWeight={answers.targetWeight}
+              onChangeCurrent={(value) => onChange("currentWeight", value)}
+              onChangeTarget={(value) => onChange("targetWeight", value)}
             />
-          ))}
+          )}
+
           {error && (
-            <p className="text-sm font-medium text-pink-strong animate-fade-in">{error}</p>
+            <p className="mt-3 text-sm font-medium text-pink-strong animate-fade-in">{error}</p>
           )}
         </div>
       </div>
 
       <div className="mt-6">
         <PrimaryButton onClick={onNext}>
-          {isLast ? "عرض النتيجة" : "التالي"}
+          {isLast ? "عرض النتيجة" : "متابعة"}
         </PrimaryButton>
       </div>
     </div>
