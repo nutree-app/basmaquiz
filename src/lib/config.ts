@@ -4,10 +4,13 @@
 // ============================================================
 
 // روابط صفحات المنتجات في متجر بسمة فت
-// ضعي رابط كل برنامج هنا
+// ضعي رابط كل منتج هنا
 export const PRODUCT_LINKS = {
-  GYM: "PLACE_GYM_PRODUCT_URL_HERE",
-  HOME: "PLACE_HOME_PRODUCT_URL_HERE",
+  CUTTING_PACKAGE: "PLACE_CUTTING_PACKAGE_URL_HERE",
+  TALATI_GHEIR: "PLACE_TALATI_GHAIR_URL_HERE",
+  GYM_TABLE: "PLACE_GYM_TABLE_URL_HERE",
+  HOME_TABLE: "PLACE_HOME_TABLE_URL_HERE",
+  FULL_PACKAGE: "PLACE_COMPLETE_TRAINING_PACKAGE_URL_HERE",
 } as const;
 
 export type ProductLinkKey = keyof typeof PRODUCT_LINKS;

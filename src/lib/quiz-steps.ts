@@ -31,7 +31,7 @@ export interface HeightWeightQuizStep {
 
 export type QuizStep = ChoiceStep | WheelStep | HeightWeightQuizStep;
 
-const LOCATION_ICONS = { "النادي": "🏋️‍♀️", "المنزل": "🏠" };
+const LOCATION_ICONS = { "النادي": "🏋️‍♀️", "المنزل": "🏠", "المنزل والنادي معًا": "🔁" };
 
 export const QUIZ_STEPS: QuizStep[] = [
   {
@@ -46,7 +46,7 @@ export const QUIZ_STEPS: QuizStep[] = [
     kind: "choice",
     key: "trainingPreference",
     question: "أين تفضلين التمرين؟",
-    options: ["النادي", "المنزل"],
+    options: ["النادي", "المنزل", "المنزل والنادي معًا"],
     icons: LOCATION_ICONS,
   },
   {
@@ -61,7 +61,7 @@ export const QUIZ_STEPS: QuizStep[] = [
     kind: "choice",
     key: "weeklyDays",
     question: "كم مرة تستطيعين التمرين أسبوعياً؟",
-    options: ["2 أيام", "3 أيام", "4 أيام", "5 أيام", "6 أيام"],
+    options: ["2 أيام", "3 أيام", "4 أيام", "5 أيام"],
   },
   {
     id: "gender",
@@ -86,12 +86,11 @@ export const QUIZ_STEPS: QuizStep[] = [
     helper: "هذي المعلومة لحساب مؤشر كتلة الجسم وتخصيص خطتك.",
   },
   {
-    id: "preferredProgram",
+    id: "programType",
     kind: "choice",
-    key: "preferredProgram",
+    key: "programType",
     question: "وش حابه يكون برنامجك؟",
-    options: ["جدول النادي", "جدول المنزل"],
-    icons: { "جدول النادي": "🏋️‍♀️", "جدول المنزل": "🏠" },
+    options: ["نظام غذائي + جدول تمارين + متابعة", "جداول تمارين فقط"],
   },
 ];
 

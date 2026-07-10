@@ -49,7 +49,7 @@ export function QuizFunnel() {
       trainingPreference: finalAnswers.trainingPreference,
       level: finalAnswers.level,
       weeklyDays: finalAnswers.weeklyDays,
-      preferredProgram: finalAnswers.preferredProgram,
+      programType: finalAnswers.programType,
     });
 
     window.setTimeout(() => {
@@ -83,7 +83,7 @@ export function QuizFunnel() {
     const product = PRODUCTS[key];
     if (!product) return;
 
-    const lead = buildLead(answers, product.title, key, product.title, product.price);
+    const lead = buildLead(answers, product.title, key, product.title, product.price ?? "");
     saveLead(lead);
     trackEvent("product_selected", {
       productKey: key,

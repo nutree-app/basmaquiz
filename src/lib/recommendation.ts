@@ -1,4 +1,4 @@
-import { ProductKey, QuizAnswers } from "./types";
+import { ProductKey, QuizAnswers, TrainingPreference } from "./types";
 
 export function calculateBmi(heightCm: number, weightKg: number): number {
   const heightM = heightCm / 100;
@@ -15,23 +15,36 @@ export function getBmiCategory(bmi: number): string {
   return "سمنة";
 }
 
-export function getRecommendedProduct(answers: QuizAnswers): ProductKey {
-  if (answers.preferredProgram === "جدول المنزل") return "HOME";
-  if (answers.preferredProgram === "جدول النادي") return "GYM";
-  return answers.trainingPreference === "المنزل" ? "HOME" : "GYM";
-}
+export function getRecommendedProducts(answers: QuizAnswers): ProductKey[] {
+  if (answers.programType === "نظام غذائي + جدول تمارين + متابعة") {
+    return ["CUTTING_PACKAGE", "TALATI_GHEIR"];
+  }
 
-export function getAlternativeProduct(recommended: ProductKey): ProductKey {
-  return recommended === "GYM" ? "HOME" : "GYM";
+  const tables: ProductKey[] = [];
+  if (answers.trainingPreference === "النادي") {
+    tables.push("GYM_TABLE");
+  } else if (answers.trainingPreference === "المنزل") {
+    tables.push("HOME_TABLE");
+  } else if (answers.trainingPreference === "المنزل والنادي معًا") {
+    tables.push("GYM_TABLE", "HOME_TABLE");
+  }
+
+  return [...tables, "FULL_PACKAGE"];
 }
 
 export function buildResultTitle(): string {
   return "الخطة الأنسب لك جاهزة";
 }
 
+function locationLabel(pref: TrainingPreference | ""): string {
+  if (pref === "المنزل") return "المنزل";
+  if (pref === "المنزل والنادي معًا") return "المنزل والنادي معًا";
+  return "النادي";
+}
+
 export function buildResultExplanation(answers: QuizAnswers): string {
   const goalText = answers.goal || "هدفك";
-  const locationText = answers.trainingPreference === "المنزل" ? "المنزل" : "النادي";
+  const locationText = locationLabel(answers.trainingPreference);
   const levelText = answers.level || "مستواك الحالي";
 
   return `بناء على هدفك في ${goalText}، وتفضيلك التمرين في ${locationText}، ومستواك ${levelText}، جهزنا لك البرنامج الأنسب.`;

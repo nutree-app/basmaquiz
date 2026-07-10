@@ -3,15 +3,12 @@ import { PrimaryButton, SecondaryButton } from "./buttons";
 
 export function ProductCard({
   product,
-  badge,
-  highlighted = false,
   onSelect,
 }: {
   product: Product;
-  badge?: string;
-  highlighted?: boolean;
   onSelect: () => void;
 }) {
+  const highlighted = Boolean(product.badge);
   const Button = highlighted ? PrimaryButton : SecondaryButton;
 
   return (
@@ -22,9 +19,9 @@ export function ProductCard({
           : "border-border bg-card"
       }`}
     >
-      {badge && (
+      {product.badge && (
         <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
-          {badge}
+          {product.badge}
         </span>
       )}
 
@@ -32,9 +29,11 @@ export function ProductCard({
         {product.title}
       </h3>
 
-      <p className="mt-2 text-center text-3xl font-black text-yellow">
-        {product.price}
-      </p>
+      {product.price && (
+        <p className="mt-2 text-center text-3xl font-black text-yellow">
+          {product.price}
+        </p>
+      )}
 
       <p className="mt-3 text-center text-sm leading-6 text-muted">
         {product.description}

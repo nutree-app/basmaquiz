@@ -37,7 +37,7 @@ export function buildLead(
     height: answers.height,
     weight: answers.weight,
     bmi: Number(calculateBmi(answers.height, answers.weight).toFixed(1)),
-    preferredProgram: answers.preferredProgram,
+    programType: answers.programType,
     recommendedPlan,
     selectedProductKey,
     selectedProductTitle,

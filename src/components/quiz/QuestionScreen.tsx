@@ -1,5 +1,4 @@
 import { BackButton, PrimaryButton } from "@/components/buttons";
-import { Logo } from "@/components/Logo";
 import { OptionCard } from "@/components/OptionCard";
 import { ProgressBar } from "@/components/ProgressBar";
 import { QuizStep } from "@/lib/quiz-steps";
@@ -37,11 +36,7 @@ export function QuestionScreen({
         </div>
       </div>
 
-      <div className="mt-2 flex justify-center">
-        <Logo size="sm" />
-      </div>
-
-      <div className="mt-8 flex-1">
+      <div className="mt-10 flex-1">
         <h2 className="text-2xl font-black leading-tight text-foreground">
           {step.question}
         </h2>

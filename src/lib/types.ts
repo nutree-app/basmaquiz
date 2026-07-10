@@ -4,17 +4,22 @@ export type Goal =
   | "المحافظة على الوزن"
   | "تحسين اللياقة";
 
-export type TrainingPreference = "النادي" | "المنزل";
+export type TrainingPreference = "النادي" | "المنزل" | "المنزل والنادي معًا";
 
 export type Level = "مبتدئة" | "متوسطة" | "متقدمة";
 
-export type WeeklyDays = "2 أيام" | "3 أيام" | "4 أيام" | "5 أيام" | "6 أيام";
+export type WeeklyDays = "2 أيام" | "3 أيام" | "4 أيام" | "5 أيام";
 
 export type Gender = "أنثى" | "ذكر";
 
-export type PreferredProgram = "جدول النادي" | "جدول المنزل";
+export type ProgramType = "نظام غذائي + جدول تمارين + متابعة" | "جداول تمارين فقط";
 
-export type ProductKey = "GYM" | "HOME";
+export type ProductKey =
+  | "CUTTING_PACKAGE"
+  | "TALATI_GHEIR"
+  | "GYM_TABLE"
+  | "HOME_TABLE"
+  | "FULL_PACKAGE";
 
 export interface QuizAnswers {
   goal: Goal | "";
@@ -25,7 +30,7 @@ export interface QuizAnswers {
   age: number;
   height: number;
   weight: number;
-  preferredProgram: PreferredProgram | "";
+  programType: ProgramType | "";
 }
 
 export interface BasmaFitLead {
@@ -38,7 +43,7 @@ export interface BasmaFitLead {
   height: number;
   weight: number;
   bmi: number;
-  preferredProgram: string;
+  programType: string;
   recommendedPlan: string;
   selectedProductKey: ProductKey | "";
   selectedProductTitle: string;
@@ -59,5 +64,5 @@ export const EMPTY_ANSWERS: QuizAnswers = {
   age: DEFAULT_AGE,
   height: DEFAULT_HEIGHT,
   weight: DEFAULT_WEIGHT,
-  preferredProgram: "",
+  programType: "",
 };
