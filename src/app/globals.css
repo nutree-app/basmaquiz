@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1f1f1f;
+  --background-soft: #252525;
+  --card: #333333;
+  --card-soft: #3a3a3a;
+  --foreground: #ffffff;
+  --muted: #cfcfcf;
+  --pink: #d64b78;
+  --pink-strong: #c94a73;
+  --yellow: #ffd21a;
+  --yellow-strong: #ffcf00;
+  --yellow-text: #1e1e1e;
+  --border: #4a4a4a;
+  --whatsapp: #25d366;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-soft: var(--background-soft);
+  --color-card: var(--card);
+  --color-card-soft: var(--card-soft);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-pink: var(--pink);
+  --color-pink-strong: var(--pink-strong);
+  --color-yellow: var(--yellow);
+  --color-yellow-strong: var(--yellow-strong);
+  --color-yellow-text: var(--yellow-text);
+  --color-border: var(--border);
+  --color-whatsapp: var(--whatsapp);
+  --font-sans: var(--font-cairo);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-cairo), Arial, Helvetica, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+textarea,
+button {
+  font-family: inherit;
+}
+
+/* Hide number input spinners for a cleaner app feel */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-step-in {
+  animation: fade-slide-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.glow-pink {
+  box-shadow: 0 0 0 2px var(--pink), 0 8px 24px -8px rgba(214, 75, 120, 0.55);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }
