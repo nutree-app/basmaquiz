@@ -35,7 +35,7 @@ export const PRODUCTS: Record<ProductKey, Product> = {
   BULKING_PACKAGE: {
     key: "BULKING_PACKAGE",
     title: "باقة التضخيم",
-    price: "39 ريال",
+    price: "59 ريال",
     description: "خطة تمرين وتغذية متكاملة تناسب هدفك في التضخيم وزيادة الوزن.",
     features: [
       { label: "تمارين مقسمة على الأسبوع كامل", included: true },
