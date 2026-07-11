@@ -90,7 +90,7 @@ export const QUIZ_STEPS: QuizStep[] = [
     kind: "choice",
     key: "programType",
     question: "وش حابه يكون برنامجك؟",
-    options: ["نظام غذائي + جدول تمارين + متابعة", "جداول تمارين فقط"],
+    options: ["نظام غذائي + جدول تمارين + متابعة", "جدول تمارين + متابعة"],
   },
 ];
 

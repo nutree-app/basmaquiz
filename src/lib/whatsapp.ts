@@ -5,8 +5,8 @@ function buildWhatsAppUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-// الرسالة الثابتة لزر الواتساب العائم في كل الشاشات
-export function getFloatingWhatsAppUrl(): string {
+// رسالة زر الواتساب في شاشة النتيجة النهائية فقط
+export function getResultWhatsAppUrl(): string {
   return buildWhatsAppUrl("مرحبًا، أكملت اختبار بسمة فت وأحتاج مساعدة في اختيار البرنامج المناسب.");
 }
 

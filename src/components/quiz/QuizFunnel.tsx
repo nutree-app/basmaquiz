@@ -20,7 +20,6 @@ export function QuizFunnel() {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [error, setError] = useState<string | null>(null);
-  const [linkNotice, setLinkNotice] = useState(false);
 
   useEffect(() => {
     const saved = loadQuizAnswers();
@@ -83,18 +82,12 @@ export function QuizFunnel() {
     const product = PRODUCTS[key];
     if (!product) return;
 
-    const lead = buildLead(answers, product.title, key, product.title, product.price ?? "");
+    const lead = buildLead(answers, product.title, key, product.title, product.price);
     saveLead(lead);
     trackEvent("product_selected", {
       productKey: key,
       productTitle: product.title,
     });
-
-    if (!product.link || product.link.startsWith("PLACE_")) {
-      setLinkNotice(true);
-      window.setTimeout(() => setLinkNotice(false), 3500);
-      return;
-    }
 
     window.location.href = product.link;
   }
@@ -122,14 +115,6 @@ export function QuizFunnel() {
 
       {screen === "result" && (
         <ResultScreen answers={answers} onSelectProduct={handleSelectProduct} />
-      )}
-
-      {linkNotice && (
-        <div className="animate-fade-in pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-6">
-          <div className="pointer-events-auto rounded-2xl border border-yellow/40 bg-card-soft px-5 py-3 text-center text-sm font-bold text-yellow shadow-xl">
-            رابط هذا البرنامج غير متوفر حاليًا
-          </div>
-        </div>
       )}
     </div>
   );

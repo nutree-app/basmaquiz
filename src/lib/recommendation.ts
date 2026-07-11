@@ -15,21 +15,29 @@ export function getBmiCategory(bmi: number): string {
   return "سمنة";
 }
 
-export function getRecommendedProducts(answers: QuizAnswers): ProductKey[] {
+export interface ComparisonPlan {
+  basic: ProductKey;
+  upsell: ProductKey;
+}
+
+function goalPackage(answers: QuizAnswers): ProductKey {
+  return answers.goal === "بناء العضلات" ? "BULKING_PACKAGE" : "CUTTING_PACKAGE";
+}
+
+export function getComparisonPlan(answers: QuizAnswers): ComparisonPlan {
   if (answers.programType === "نظام غذائي + جدول تمارين + متابعة") {
-    return ["CUTTING_PACKAGE", "TALATI_GHEIR"];
+    return { basic: goalPackage(answers), upsell: "TALATI_GHEIR" };
   }
 
-  const tables: ProductKey[] = [];
   if (answers.trainingPreference === "النادي") {
-    tables.push("GYM_TABLE");
-  } else if (answers.trainingPreference === "المنزل") {
-    tables.push("HOME_TABLE");
-  } else if (answers.trainingPreference === "المنزل والنادي معًا") {
-    tables.push("GYM_TABLE", "HOME_TABLE");
+    return { basic: "GYM_TABLE", upsell: goalPackage(answers) };
+  }
+  if (answers.trainingPreference === "المنزل") {
+    return { basic: "HOME_TABLE", upsell: goalPackage(answers) };
   }
 
-  return [...tables, "FULL_PACKAGE"];
+  // المنزل والنادي معًا: تمرين واحد كخيار بسيط + البكج الشامل كخيار أعلى قيمة
+  return { basic: "HOME_TABLE", upsell: "FULL_PACKAGE" };
 }
 
 export function buildResultTitle(): string {

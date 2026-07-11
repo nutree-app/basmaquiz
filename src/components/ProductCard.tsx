@@ -1,27 +1,59 @@
 import { Product } from "@/lib/products";
 import { PrimaryButton, SecondaryButton } from "./buttons";
 
+function CheckIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0">
+      <path
+        d="M5 13l4 4L19 7"
+        stroke="#34D399"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 opacity-60">
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        stroke="#CFCFCF"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function ProductCard({
   product,
+  highlighted = false,
   onSelect,
 }: {
   product: Product;
+  highlighted?: boolean;
   onSelect: () => void;
 }) {
-  const highlighted = Boolean(product.badge);
   const Button = highlighted ? PrimaryButton : SecondaryButton;
+  const note = highlighted
+    ? "الخيار الأشمل — يعطيك قيمة أكبر ونتائج أوضح."
+    : "خيار بسيط ومباشر لو تبين تبدئين الآن.";
 
   return (
     <div
       className={`relative flex flex-col rounded-3xl border p-6 transition-transform ${
         highlighted
-          ? "glow-pink z-10 scale-[1.03] border-pink bg-card-soft"
+          ? "glow-pink z-10 border-pink bg-card-soft sm:scale-[1.03]"
           : "border-border bg-card"
       }`}
     >
-      {product.badge && (
+      {highlighted && (
         <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
-          {product.badge}
+          الأكثر طلبا
         </span>
       )}
 
@@ -29,17 +61,24 @@ export function ProductCard({
         {product.title}
       </h3>
 
-      {product.price && (
-        <p className="mt-2 text-center text-3xl font-black text-yellow">
-          {product.price}
-        </p>
-      )}
-
-      <p className="mt-3 text-center text-sm leading-6 text-muted">
-        {product.description}
+      <p className="mt-2 text-center text-3xl font-black text-yellow">
+        {product.price}
       </p>
 
-      <div className="mt-6">
+      <ul className="mt-5 flex flex-col gap-2">
+        {product.features.map((feature) => (
+          <li key={feature.label} className="flex items-center gap-2 text-sm">
+            {feature.included ? <CheckIcon /> : <XIcon />}
+            <span className={feature.included ? "text-foreground" : "text-muted opacity-70"}>
+              {feature.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <p className="mt-4 text-center text-xs leading-5 text-muted">{note}</p>
+
+      <div className="mt-5">
         <Button onClick={onSelect}>{product.buttonLabel}</Button>
       </div>
     </div>
