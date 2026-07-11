@@ -54,7 +54,7 @@ export const PRODUCTS: Record<ProductKey, Product> = {
     description:
       "متابعة لمدة 3 أشهر، وتشمل الجداول كاملة، الخطة الغذائية، والملفات الإضافية المجانية.",
     features: [
-      { label: "جدول تمارين كامل", included: true },
+      { label: "تشمل جميع جداول التمارين: منزل، نادي، وبيلاتس", included: true },
       { label: "شرح التمارين بالفيديو", included: true },
       { label: "متابعة لمدة 3 أشهر", included: true },
       { label: "نظام غذائي محسوب", included: true },
