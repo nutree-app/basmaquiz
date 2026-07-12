@@ -1,4 +1,4 @@
-import { WHATSAPP_NUMBER } from "./config";
+import { PRODUCT_PAYMENT_LINKS, WHATSAPP_NUMBER } from "./config";
 import { PRODUCTS } from "./products";
 import { getComparisonPlan } from "./recommendation";
 import { BasmaFitLead, QuizAnswers } from "./types";
@@ -48,8 +48,9 @@ export function getResultWhatsAppUrl(answers: QuizAnswers): string {
     lines.push("💡 سبب الترشيح:", buildRecommendationReason(answers, programTitle), "");
   }
 
-  if (product?.link) {
-    lines.push("لو حابة تكملي الطلب، تقدري تكمليه مباشرة من هنا 🤍", product.link, "");
+  const paymentLink = PRODUCT_PAYMENT_LINKS[upsell];
+  if (paymentLink) {
+    lines.push("لو حابة تكملي الطلب، تقدري تكمليه مباشرة من هنا 🤍", paymentLink, "");
   }
 
   lines.push("واذا عندك اي استفسار اخر تفضلي 🌷");
