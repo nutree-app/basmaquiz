@@ -21,11 +21,13 @@ function buildRecommendationReason(answers: QuizAnswers, programTitle: string): 
 }
 
 // رسالة زر الواتساب في شاشة النتيجة النهائية فقط
+// لا تحتوي الرسالة على اسم العميلة إطلاقًا، فقط بيانات الاختبار والمنتج الموصى به
 export function getResultWhatsAppUrl(answers: QuizAnswers): string {
   const { upsell } = getComparisonPlan(answers);
-  const programTitle = PRODUCTS[upsell]?.title ?? "";
+  const product = PRODUCTS[upsell];
+  const programTitle = product?.title ?? "";
 
-  const lines: string[] = ["مرحبا، أكملت اختبار بسمة فت وهذه نتيجتي:", ""];
+  const lines: string[] = ["مرحبا 🌷", "اكملت اختبار بسمة فت، وهذه نتيجتي:", ""];
 
   if (programTitle) {
     lines.push(`🎯 البرنامج المناسب لي: ${programTitle}`, "");
@@ -46,7 +48,11 @@ export function getResultWhatsAppUrl(answers: QuizAnswers): string {
     lines.push("💡 سبب الترشيح:", buildRecommendationReason(answers, programTitle), "");
   }
 
-  lines.push("أحتاج مساعدتك في إكمال الطلب 🤍");
+  if (product?.link) {
+    lines.push("لو حابة تكملي الطلب، تقدري تكمليه مباشرة من هنا 🤍", product.link, "");
+  }
+
+  lines.push("واذا عندك اي استفسار اخر تفضلي 🌷");
 
   return buildWhatsAppUrl(lines.join("\n"));
 }
