@@ -49,7 +49,7 @@ export function ResultScreen({
         </p>
         <div className="mt-5">
           <WhatsAppButton
-            href={getResultWhatsAppUrl()}
+            href={getResultWhatsAppUrl(answers)}
             onClick={() => trackEvent("whatsapp_click", { context: "result" })}
           >
             تواصل واتساب
