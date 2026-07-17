@@ -4,10 +4,29 @@ import { useEffect, useRef, useState } from "react";
 
 const STEPS = ["تحليل إجاباتك", "تحديد هدفك", "مراجعة مستوى نشاطك", "تجهيز خطتك المناسبة"];
 
-// مدة تعبئة النسبة من 0% إلى 100%، بين 5 و6 ثوانٍ تقريبًا
-const DURATION_MS = 5500;
+// مراحل تعبئة النسبة: كل مرحلة تغطي ربع الشريط، والربع الأخير أبطأ عمدًا
+// لإحساس تحضير طبيعي (0-25%: 1ث، 25-50%: 1ث، 50-75%: 1ث، 75-100%: 2ث)
+const PERCENT_SEGMENTS = [
+  { from: 0, to: 25, durationMs: 1000 },
+  { from: 25, to: 50, durationMs: 1000 },
+  { from: 50, to: 75, durationMs: 1000 },
+  { from: 75, to: 100, durationMs: 2000 },
+];
 // مدة إبقاء حالة 100% ظاهرة قبل الانتقال لصفحة النتيجة
-const HOLD_AT_100_MS = 400;
+const HOLD_AT_100_MS = 300;
+
+function percentAtElapsed(elapsedMs: number): number {
+  let segmentStart = 0;
+  for (const segment of PERCENT_SEGMENTS) {
+    const segmentEnd = segmentStart + segment.durationMs;
+    if (elapsedMs < segmentEnd) {
+      const segmentProgress = (elapsedMs - segmentStart) / segment.durationMs;
+      return segment.from + (segment.to - segment.from) * segmentProgress;
+    }
+    segmentStart = segmentEnd;
+  }
+  return 100;
+}
 
 export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [percent, setPercent] = useState(0);
@@ -24,7 +43,7 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
       if (startRef.current === null) startRef.current = timestamp;
 
       const elapsed = timestamp - startRef.current;
-      const nextPercent = Math.min(100, Math.round((elapsed / DURATION_MS) * 100));
+      const nextPercent = Math.min(100, Math.round(percentAtElapsed(elapsed)));
       setPercent((prev) => (nextPercent > prev ? nextPercent : prev));
 
       if (nextPercent >= 100) {
