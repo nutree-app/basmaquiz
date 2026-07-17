@@ -53,17 +53,17 @@ export function ResultScreen({
           </p>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-4">
+        <div className="mt-5 flex flex-col gap-4">
           <PlanOptionCard
-            emoji="🏠"
-            title="المنزل"
-            description={PRODUCTS.HOME_TABLE.description}
+            title="جدول المنزل"
+            price={PRODUCTS.HOME_TABLE.price}
+            buttonLabel="اختاري البرنامج"
             onSelect={() => onSelectProduct("HOME_TABLE")}
           />
           <PlanOptionCard
-            emoji="🏋️‍♀️"
-            title="النادي"
-            description={PRODUCTS.GYM_TABLE.description}
+            title="جدول النادي"
+            price={PRODUCTS.GYM_TABLE.price}
+            buttonLabel="اختاري البرنامج"
             onSelect={() => onSelectProduct("GYM_TABLE")}
           />
         </div>
