@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/ProductCard";
+import { PlanOptionCard } from "@/components/PlanOptionCard";
 import { WhatsAppButton } from "@/components/buttons";
 import { PRODUCTS } from "@/lib/products";
 import {
@@ -38,6 +39,34 @@ export function ResultScreen({
           product={PRODUCTS[basic]}
           onSelect={() => onSelectProduct(basic)}
         />
+      </div>
+
+      <div className="mt-10 h-px w-full bg-border/60" aria-hidden="true" />
+
+      <div className="mt-8">
+        <div className="text-center">
+          <h3 className="text-lg font-extrabold text-foreground">
+            أو إذا كنت تفضلين جدول تمارين بدون متابعة
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            اختاري الخيار المناسب لأسلوب حياتك.
+          </p>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-4">
+          <PlanOptionCard
+            emoji="🏠"
+            title="المنزل"
+            description={PRODUCTS.HOME_TABLE.description}
+            onSelect={() => onSelectProduct("HOME_TABLE")}
+          />
+          <PlanOptionCard
+            emoji="🏋️‍♀️"
+            title="النادي"
+            description={PRODUCTS.GYM_TABLE.description}
+            onSelect={() => onSelectProduct("GYM_TABLE")}
+          />
+        </div>
       </div>
 
       <div className="mt-8 rounded-3xl border border-border bg-card p-6 text-center">
