@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HeroScreen } from "./HeroScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { LoadingScreen } from "./LoadingScreen";
@@ -12,8 +12,6 @@ import { PRODUCTS } from "@/lib/products";
 import { trackEvent } from "@/lib/analytics";
 
 type Screen = "hero" | "quiz" | "loading" | "result";
-
-const RESULT_TRANSITION_MS = 1500;
 
 export function QuizFunnel() {
   const [screen, setScreen] = useState<Screen>("hero");
@@ -50,11 +48,13 @@ export function QuizFunnel() {
       weeklyDays: finalAnswers.weeklyDays,
       programType: finalAnswers.programType,
     });
-
-    window.setTimeout(() => {
-      setScreen("result");
-    }, RESULT_TRANSITION_MS);
   }
+
+  // تُستدعى فقط عند اكتمال أنيميشن تحضير الخطة (وصول النسبة إلى 100%)،
+  // وليست تأخيرًا زمنيًا ثابتًا؛ هذا يضمن عدم الانتقال للنتيجة قبل اكتمال العرض
+  const handleLoadingComplete = useCallback(() => {
+    setScreen("result");
+  }, []);
 
   function handleNext() {
     const validationError = validateStep(currentStep, answers);
@@ -111,7 +111,7 @@ export function QuizFunnel() {
         />
       )}
 
-      {screen === "loading" && <LoadingScreen />}
+      {screen === "loading" && <LoadingScreen onComplete={handleLoadingComplete} />}
 
       {screen === "result" && (
         <ResultScreen answers={answers} onSelectProduct={handleSelectProduct} />
