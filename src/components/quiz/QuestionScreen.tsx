@@ -29,12 +29,7 @@ export function QuestionScreen({
 
   return (
     <div key={step.id} className="animate-step-in flex flex-1 flex-col px-6 pb-8 pt-6">
-      <div className="flex items-center gap-3">
-        <BackButton onClick={onBack} disabled={stepIndex === 0} />
-        <div className="flex-1">
-          <ProgressBar current={stepIndex} total={totalSteps} />
-        </div>
-      </div>
+      <ProgressBar current={stepIndex} total={totalSteps} />
 
       <div className="mt-10 flex-1">
         <h2 className="text-2xl font-black leading-tight text-foreground">
@@ -83,10 +78,13 @@ export function QuestionScreen({
         </div>
       </div>
 
-      <div className="mt-6">
-        <PrimaryButton onClick={onNext}>
-          {isLast ? "عرض النتيجة" : "متابعة"}
-        </PrimaryButton>
+      <div className="safe-bottom mt-6 flex items-center gap-3">
+        <BackButton onClick={onBack} disabled={stepIndex === 0} />
+        <div className="min-w-0 flex-1">
+          <PrimaryButton onClick={onNext}>
+            {isLast ? "عرض النتيجة" : "متابعة"}
+          </PrimaryButton>
+        </div>
       </div>
     </div>
   );
