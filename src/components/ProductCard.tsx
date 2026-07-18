@@ -1,5 +1,5 @@
 import { Product } from "@/lib/products";
-import { PrimaryButton, SecondaryButton } from "./buttons";
+import { BlueButton } from "./buttons";
 
 function CheckIcon() {
   return (
@@ -31,31 +31,16 @@ function XIcon() {
 
 export function ProductCard({
   product,
-  highlighted = false,
   onSelect,
 }: {
   product: Product;
-  highlighted?: boolean;
   onSelect: () => void;
 }) {
-  const Button = highlighted ? PrimaryButton : SecondaryButton;
-  const note = highlighted
-    ? "الخيار الأشمل — يعطيك قيمة أكبر ونتائج أوضح."
-    : "خيار بسيط ومباشر لو تبين تبدئين الآن.";
-
   return (
-    <div
-      className={`relative flex flex-col rounded-3xl border p-6 transition-transform ${
-        highlighted
-          ? "glow-pink z-10 border-pink bg-card-soft sm:scale-[1.03]"
-          : "border-border bg-card"
-      }`}
-    >
-      {highlighted && (
-        <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
-          الأكثر طلبا
-        </span>
-      )}
+    <div className="glow-pink relative z-10 flex flex-col rounded-3xl border border-pink bg-card-soft p-6">
+      <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
+        الأكثر طلبا
+      </span>
 
       <h3 className="mt-2 text-center text-xl font-extrabold text-foreground">
         {product.title}
@@ -76,10 +61,12 @@ export function ProductCard({
         ))}
       </ul>
 
-      <p className="mt-4 text-center text-xs leading-5 text-muted">{note}</p>
+      <p className="mt-4 text-center text-xs leading-5 text-muted">
+        الخيار الأشمل — يعطيك قيمة أكبر ونتائج أوضح.
+      </p>
 
       <div className="mt-5">
-        <Button onClick={onSelect}>{product.buttonLabel}</Button>
+        <BlueButton onClick={onSelect}>{product.buttonLabel}</BlueButton>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { PRODUCT_PAYMENT_LINKS, WHATSAPP_NUMBER } from "./config";
 import { PRODUCTS } from "./products";
-import { getComparisonPlan } from "./recommendation";
+import { getRecommendedProduct } from "./recommendation";
 import { BasmaFitLead, QuizAnswers } from "./types";
 
 function buildWhatsAppUrl(message: string): string {
@@ -23,8 +23,8 @@ function buildRecommendationReason(answers: QuizAnswers, programTitle: string): 
 // رسالة زر الواتساب في شاشة النتيجة النهائية فقط
 // لا تحتوي الرسالة على اسم العميلة إطلاقًا، فقط بيانات الاختبار والمنتج الموصى به
 export function getResultWhatsAppUrl(answers: QuizAnswers): string {
-  const { upsell } = getComparisonPlan(answers);
-  const product = PRODUCTS[upsell];
+  const recommended = getRecommendedProduct(answers);
+  const product = PRODUCTS[recommended];
   const programTitle = product?.title ?? "";
 
   const lines: string[] = ["مرحبا 🌷", "اكملت اختبار بسمة فت، وهذه نتيجتي:", ""];
@@ -48,7 +48,7 @@ export function getResultWhatsAppUrl(answers: QuizAnswers): string {
     lines.push("💡 سبب الترشيح:", buildRecommendationReason(answers, programTitle), "");
   }
 
-  const paymentLink = PRODUCT_PAYMENT_LINKS[upsell];
+  const paymentLink = PRODUCT_PAYMENT_LINKS[recommended];
   if (paymentLink) {
     lines.push("لو حابة تكملي الطلب، تقدري تكمليه مباشرة من هنا 🤍", paymentLink, "");
   }

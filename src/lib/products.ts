@@ -109,6 +109,6 @@ export const PRODUCTS: Record<ProductKey, Product> = {
       { label: "شرح التمارين بالصور", included: true },
     ],
     link: PRODUCT_LINKS.FULL_PACKAGE,
-    buttonLabel: "اختاري بكج التمارين الشامل",
+    buttonLabel: "اختاري باكج التمارين الشامل",
   },
 };

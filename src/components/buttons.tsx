@@ -15,6 +15,17 @@ export function PrimaryButton({ children, className = "", ...props }: ButtonProp
   );
 }
 
+export function BlueButton({ children, className = "", ...props }: ButtonProps) {
+  return (
+    <button
+      className={`w-full rounded-2xl bg-blue px-6 py-4 text-base font-extrabold text-white shadow-lg shadow-black/20 transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function SecondaryButton({ children, className = "", ...props }: ButtonProps) {
   return (
     <button

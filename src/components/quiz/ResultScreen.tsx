@@ -5,7 +5,7 @@ import { PRODUCTS } from "@/lib/products";
 import {
   buildResultExplanation,
   buildResultTitle,
-  getComparisonPlan,
+  getRecommendedProduct,
 } from "@/lib/recommendation";
 import { ProductKey, QuizAnswers } from "@/lib/types";
 import { getResultWhatsAppUrl } from "@/lib/whatsapp";
@@ -20,7 +20,7 @@ export function ResultScreen({
 }) {
   const title = buildResultTitle();
   const explanation = buildResultExplanation(answers);
-  const { basic, upsell } = getComparisonPlan(answers);
+  const recommended = getRecommendedProduct(answers);
 
   return (
     <div className="animate-fade-in flex flex-1 flex-col px-6 pb-10 pt-10">
@@ -29,15 +29,10 @@ export function ResultScreen({
         <p className="mt-3 text-sm leading-7 text-muted">{explanation}</p>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="mt-8">
         <ProductCard
-          product={PRODUCTS[upsell]}
-          highlighted
-          onSelect={() => onSelectProduct(upsell)}
-        />
-        <ProductCard
-          product={PRODUCTS[basic]}
-          onSelect={() => onSelectProduct(basic)}
+          product={PRODUCTS[recommended]}
+          onSelect={() => onSelectProduct(recommended)}
         />
       </div>
 

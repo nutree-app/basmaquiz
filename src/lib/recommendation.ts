@@ -15,29 +15,25 @@ export function getBmiCategory(bmi: number): string {
   return "سمنة";
 }
 
-export interface ComparisonPlan {
-  basic: ProductKey;
-  upsell: ProductKey;
-}
-
-function goalPackage(answers: QuizAnswers): ProductKey {
-  return answers.goal === "بناء العضلات" ? "BULKING_PACKAGE" : "CUTTING_PACKAGE";
-}
-
-export function getComparisonPlan(answers: QuizAnswers): ComparisonPlan {
-  if (answers.programType === "نظام غذائي + جدول تمارين + متابعة") {
-    return { basic: goalPackage(answers), upsell: "TALATI_GHEIR" };
+// ترتيب الأولوية (لا تغيّري الترتيب):
+// 1) المنزل والنادي معًا → البكج الشامل فقط
+// 2) المحافظة على الوزن → طلتي غير
+// 3) خسارة الوزن → باقة التنشيف
+// 4) بناء العضلات → باقة التضخيم
+export function getRecommendedProduct(answers: QuizAnswers): ProductKey {
+  if (answers.trainingPreference === "المنزل والنادي معًا") {
+    return "FULL_PACKAGE";
   }
-
-  if (answers.trainingPreference === "النادي") {
-    return { basic: "GYM_TABLE", upsell: goalPackage(answers) };
+  if (answers.goal === "المحافظة على الوزن") {
+    return "TALATI_GHEIR";
   }
-  if (answers.trainingPreference === "المنزل") {
-    return { basic: "HOME_TABLE", upsell: goalPackage(answers) };
+  if (answers.goal === "خسارة الوزن") {
+    return "CUTTING_PACKAGE";
   }
-
-  // المنزل والنادي معًا: تمرين واحد كخيار بسيط + البكج الشامل كخيار أعلى قيمة
-  return { basic: "HOME_TABLE", upsell: "FULL_PACKAGE" };
+  if (answers.goal === "بناء العضلات") {
+    return "BULKING_PACKAGE";
+  }
+  return "CUTTING_PACKAGE";
 }
 
 export function buildResultTitle(): string {

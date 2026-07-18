@@ -12,6 +12,8 @@
   --yellow: #ffd21a;
   --yellow-strong: #ffcf00;
   --yellow-text: #1e1e1e;
+  --blue: #2f6feb;
+  --blue-strong: #2258c9;
   --border: #4a4a4a;
   --whatsapp: #25d366;
 }
@@ -28,6 +30,8 @@
   --color-yellow: var(--yellow);
   --color-yellow-strong: var(--yellow-strong);
   --color-yellow-text: var(--yellow-text);
+  --color-blue: var(--blue);
+  --color-blue-strong: var(--blue-strong);
   --color-border: var(--border);
   --color-whatsapp: var(--whatsapp);
   --font-sans: var(--font-cairo);
