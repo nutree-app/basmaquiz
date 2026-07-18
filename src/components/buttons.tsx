@@ -41,10 +41,10 @@ export function BackButton({ className = "", ...props }: ButtonHTMLAttributes<HT
   return (
     <button
       aria-label="رجوع"
-      className={`inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-border bg-transparent px-5 py-4 text-sm font-bold text-foreground transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-transparent text-foreground transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path
           d="M9 5l7 7-7 7"
           stroke="currentColor"
@@ -53,7 +53,6 @@ export function BackButton({ className = "", ...props }: ButtonHTMLAttributes<HT
           strokeLinejoin="round"
         />
       </svg>
-      <span>السابق</span>
     </button>
   );
 }
