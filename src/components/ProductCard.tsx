@@ -1,5 +1,5 @@
 import { Product } from "@/lib/products";
-import { BlueButton } from "./buttons";
+import { PrimaryButton } from "./buttons";
 
 function CheckIcon() {
   return (
@@ -66,7 +66,7 @@ export function ProductCard({
       </p>
 
       <div className="mt-5">
-        <BlueButton onClick={onSelect}>{product.buttonLabel}</BlueButton>
+        <PrimaryButton onClick={onSelect}>{product.buttonLabel}</PrimaryButton>
       </div>
     </div>
   );
