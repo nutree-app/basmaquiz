@@ -7,6 +7,11 @@ function buildWhatsAppUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
+// رسالة الدعم في صفحة دليل استخدام جدول التمارين المنزلية
+export function getHomeWorkoutGuideWhatsAppUrl(): string {
+  return buildWhatsAppUrl("مرحبا، احتاج مساعدة في استخدام جدول التمارين المنزلية.");
+}
+
 function buildRecommendationReason(answers: QuizAnswers, programTitle: string): string {
   const reasonParts: string[] = [];
   if (answers.goal) reasonParts.push(`هدفك في ${answers.goal}`);

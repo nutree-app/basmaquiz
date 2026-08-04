@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    // 75 هي الجودة الافتراضية، و90 للقطات جدول التمارين عشان النص العربي يبقى واضح
+    qualities: [75, 90],
+  },
 };
 
 export default nextConfig;

@@ -27,6 +27,11 @@ export const PRODUCT_PAYMENT_LINKS: Record<ProductLinkKey, string> = {
   FULL_PACKAGE: "https://basmafit.com/payment/p479823947",
 };
 
+// رابط ملف جدول التمارين المنزلية (PDF)
+// يُستخدم في أزرار صفحة /home-workout-guide فقط - لا نغيّر الملف ولا روابطه الداخلية
+export const HOME_WORKOUT_PDF_URL =
+  "https://drive.google.com/file/d/14d6Ebs_gvEjPDQXfQORyEPwnyzQJMBmI/view?usp=drivesdk";
+
 // رقم واتساب بسمة فت
 export const WHATSAPP_NUMBER = "966559964709";
 

@@ -4,12 +4,13 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
 };
 
+// شكل الزر الأصفر الأساسي - مُصدَّر عشان الروابط <a> تستخدم نفس الشكل بدون تكرار
+export const primaryButtonClass =
+  "w-full rounded-2xl bg-yellow px-6 py-4 text-base font-extrabold text-yellow-text shadow-lg shadow-black/20 transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50";
+
 export function PrimaryButton({ children, className = "", ...props }: ButtonProps) {
   return (
-    <button
-      className={`w-full rounded-2xl bg-yellow px-6 py-4 text-base font-extrabold text-yellow-text shadow-lg shadow-black/20 transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-      {...props}
-    >
+    <button className={`${primaryButtonClass} ${className}`} {...props}>
       {children}
     </button>
   );
