@@ -1,31 +1,104 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { HeroScreen } from "./HeroScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { LoadingScreen } from "./LoadingScreen";
 import { ResultScreen } from "./ResultScreen";
-import { QUIZ_STEPS, validateStep } from "@/lib/quiz-steps";
-import { EMPTY_ANSWERS, ProductKey, QuizAnswers } from "@/lib/types";
-import { buildLead, loadQuizAnswers, saveLead, saveQuizAnswers } from "@/lib/storage";
+import { WorkoutShell } from "@/components/workout/WorkoutShell";
+import { WorkoutProgress } from "@/components/workout/WorkoutProgress";
+import { QUIZ_STEPS, STEP_IDS, TOTAL_STEPS, validateStep } from "@/lib/quiz-steps";
+import {
+  EMPTY_ANSWERS,
+  ProductKey,
+  QuizAnswers,
+  TRAINING_DAYS_LABEL,
+  TRAINING_LOCATION_LABEL,
+} from "@/lib/types";
+import {
+  buildLead,
+  loadProgress,
+  loadQuizAnswers,
+  saveLead,
+  saveProgress,
+  saveQuizAnswers,
+} from "@/lib/storage";
 import { PRODUCTS } from "@/lib/products";
 import { trackEvent } from "@/lib/analytics";
 
 type Screen = "hero" | "quiz" | "loading" | "result";
 
+interface Boot {
+  token: "server" | "client";
+  answers: QuizAnswers;
+  screen: Screen;
+  stepIndex: number;
+}
+
+const SERVER_BOOT: Boot = {
+  token: "server",
+  answers: EMPTY_ANSWERS,
+  screen: "hero",
+  stepIndex: 0,
+};
+
+/** Cached so useSyncExternalStore sees a stable snapshot across renders. */
+let clientBoot: Boot | undefined;
+
+/** ?step=<id|index> opens a specific question directly. */
+function readRequestedStep(): number | null {
+  const requested = new URLSearchParams(window.location.search).get("step");
+  if (!requested) return null;
+
+  const byId = STEP_IDS.indexOf(requested);
+  const index = byId >= 0 ? byId : Number(requested);
+  return Number.isInteger(index) && index >= 0 && index < TOTAL_STEPS ? index : null;
+}
+
+function getClientBoot(): Boot {
+  if (!clientBoot) {
+    const progress = loadProgress(TOTAL_STEPS);
+    const requestedStep = readRequestedStep();
+
+    clientBoot = {
+      token: "client",
+      answers: loadQuizAnswers() ?? EMPTY_ANSWERS,
+      // An explicit ?step= link wins over restored progress.
+      screen: requestedStep !== null ? "quiz" : (progress?.screen ?? "hero"),
+      stepIndex: requestedStep ?? progress?.stepIndex ?? 0,
+    };
+  }
+  return clientBoot;
+}
+
+function getServerBoot(): Boot {
+  return SERVER_BOOT;
+}
+
+function subscribe(): () => void {
+  return () => {};
+}
+
 export function QuizFunnel() {
-  const [screen, setScreen] = useState<Screen>("hero");
-  const [stepIndex, setStepIndex] = useState(0);
-  const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
+  const boot = useSyncExternalStore(subscribe, getClientBoot, getServerBoot);
+  // Remounting on the token flip lets restored progress arrive as initial
+  // state, so the server and the hydrating client render identical markup.
+  return <Funnel key={boot.token} boot={boot} />;
+}
+
+function Funnel({ boot }: { boot: Boot }) {
+  const [screen, setScreen] = useState<Screen>(boot.screen);
+  const [stepIndex, setStepIndex] = useState(boot.stepIndex);
+  const [answers, setAnswers] = useState<QuizAnswers>(boot.answers);
   const [error, setError] = useState<string | null>(null);
 
+  const canPersist = boot.token === "client";
+
+  // Persist where the user is, so a refresh lands on the same screen.
   useEffect(() => {
-    const saved = loadQuizAnswers();
-    if (saved) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAnswers(saved);
-    }
-  }, []);
+    if (!canPersist || screen === "loading") return;
+    saveProgress({ screen, stepIndex });
+  }, [canPersist, screen, stepIndex]);
 
   const currentStep = QUIZ_STEPS[stepIndex];
 
@@ -43,15 +116,24 @@ export function QuizFunnel() {
     saveQuizAnswers(finalAnswers);
     trackEvent("quiz_completed", {
       goal: finalAnswers.goal,
-      trainingPreference: finalAnswers.trainingPreference,
+      // Legacy parameter names kept so existing dashboards keep reporting —
+      // now carrying the Arabic labels for the two redesigned answers.
+      trainingPreference: finalAnswers.trainingLocation
+        ? TRAINING_LOCATION_LABEL[finalAnswers.trainingLocation]
+        : "",
+      weeklyDays: finalAnswers.trainingDays
+        ? TRAINING_DAYS_LABEL[finalAnswers.trainingDays]
+        : "",
+      // Canonical values for the redesigned questions.
+      trainingLocation: finalAnswers.trainingLocation,
+      trainingDays: finalAnswers.trainingDays,
       level: finalAnswers.level,
-      weeklyDays: finalAnswers.weeklyDays,
       programType: finalAnswers.programType,
     });
   }
 
-  // تُستدعى فقط عند اكتمال أنيميشن تحضير الخطة (وصول النسبة إلى 100%)،
-  // وليست تأخيرًا زمنيًا ثابتًا؛ هذا يضمن عدم الانتقال للنتيجة قبل اكتمال العرض
+  // Fires when the preparing-plan animation reaches 100%, not on a fixed timer,
+  // so the result never appears before the animation has finished.
   const handleLoadingComplete = useCallback(() => {
     setScreen("result");
   }, []);
@@ -63,7 +145,7 @@ export function QuizFunnel() {
       return;
     }
 
-    if (stepIndex === QUIZ_STEPS.length - 1) {
+    if (stepIndex === TOTAL_STEPS - 1) {
       goToResult(answers);
       return;
     }
@@ -73,9 +155,17 @@ export function QuizFunnel() {
   }
 
   function handleBack() {
-    if (stepIndex === 0) return;
+    if (stepIndex === 0) {
+      setScreen("hero");
+      return;
+    }
     setStepIndex((i) => i - 1);
     setError(null);
+  }
+
+  function handleStart() {
+    setScreen("quiz");
+    setStepIndex(0);
   }
 
   function handleSelectProduct(key: ProductKey) {
@@ -93,29 +183,33 @@ export function QuizFunnel() {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      {screen === "hero" && (
-        <HeroScreen onStart={() => setScreen("quiz")} />
-      )}
+    <WorkoutShell>
+      {screen === "quiz" && <WorkoutProgress current={stepIndex} total={TOTAL_STEPS} />}
 
-      {screen === "quiz" && currentStep && (
-        <QuestionScreen
-          step={currentStep}
-          answers={answers}
-          error={error}
-          stepIndex={stepIndex}
-          totalSteps={QUIZ_STEPS.length}
-          onChange={handleChange}
-          onNext={handleNext}
-          onBack={handleBack}
-        />
-      )}
+      <main className="flex min-h-0 flex-1 flex-col">
+        {screen === "hero" && <HeroScreen onStart={handleStart} />}
 
-      {screen === "loading" && <LoadingScreen onComplete={handleLoadingComplete} />}
+        {screen === "quiz" && currentStep && (
+          <div key={currentStep.id} className="animate-ob-enter flex min-h-0 flex-1 flex-col">
+            <QuestionScreen
+              step={currentStep}
+              answers={answers}
+              error={error}
+              stepIndex={stepIndex}
+              totalSteps={TOTAL_STEPS}
+              onChange={handleChange}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          </div>
+        )}
 
-      {screen === "result" && (
-        <ResultScreen answers={answers} onSelectProduct={handleSelectProduct} />
-      )}
-    </div>
+        {screen === "loading" && <LoadingScreen onComplete={handleLoadingComplete} />}
+
+        {screen === "result" && (
+          <ResultScreen answers={answers} onSelectProduct={handleSelectProduct} />
+        )}
+      </main>
+    </WorkoutShell>
   );
 }

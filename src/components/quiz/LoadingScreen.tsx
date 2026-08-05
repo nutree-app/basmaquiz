@@ -70,14 +70,14 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const activeStepIndex = Math.min(STEPS.length - 1, Math.floor(percent / 25));
 
   return (
-    <div className="animate-fade-in flex flex-1 flex-col items-center justify-center gap-10 px-6 text-center">
+    <div className="animate-ob-enter flex flex-1 flex-col items-center justify-center gap-10 px-6 text-center">
       <div className="flex w-full max-w-xs flex-col items-center gap-4">
-        <span className="text-5xl font-black tabular-nums text-pink">{percent}٪</span>
-        <p className="text-sm font-bold text-muted">جاري تجهيز خطتك المناسبة…</p>
+        <span className="text-5xl font-extrabold tabular-nums text-wk-pink-text">{percent}٪</span>
+        <p className="text-sm font-bold text-ob-text-dim">جاري تجهيز خطتك المناسبة…</p>
 
-        <div className="h-2 w-full overflow-hidden rounded-full bg-card">
+        <div className="h-[6px] w-full overflow-hidden rounded-full bg-ob-line">
           <div
-            className="h-full rounded-full bg-pink"
+            className="h-full rounded-full bg-wk-pink shadow-[0_0_12px_rgba(214,75,120,0.6)]"
             style={{ width: `${percent}%`, transition: "width 80ms linear" }}
           />
         </div>
@@ -93,10 +93,10 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${
                   isComplete
-                    ? "border-pink bg-pink"
+                    ? "border-wk-pink bg-wk-pink"
                     : isActive
-                      ? "border-pink bg-transparent"
-                      : "border-border bg-transparent"
+                      ? "border-wk-pink bg-transparent"
+                      : "border-ob-line bg-transparent"
                 }`}
               >
                 {isComplete && (
@@ -120,7 +120,7 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
               </span>
               <span
                 className={`text-sm font-bold transition-colors duration-300 ${
-                  isComplete || isActive ? "text-foreground" : "text-muted"
+                  isComplete || isActive ? "text-white" : "text-ob-text-faint"
                 }`}
               >
                 {step}

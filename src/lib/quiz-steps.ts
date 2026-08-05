@@ -1,5 +1,17 @@
-import { QuizAnswers } from "./types";
+import { type QuizAnswers, TRAINING_DAYS_LABEL, TRAINING_DAYS_OPTIONS } from "./types";
 import { validateRequiredChoice } from "./validation";
+
+/** One selectable answer. */
+export interface ChoiceOption {
+  /** Canonical value stored in QuizAnswers. */
+  value: string | number;
+  label: string;
+  helper?: string;
+  /** Short text shown large inside the rounded tile — used by the training-days step. */
+  badge?: string;
+  /** Named line icon drawn by WorkoutOptionCard. */
+  icon?: "gym" | "home";
+}
 
 export interface ChoiceStep {
   id: string;
@@ -7,8 +19,7 @@ export interface ChoiceStep {
   key: keyof QuizAnswers;
   question: string;
   helper?: string;
-  options: string[];
-  icons?: Record<string, string>;
+  options: ChoiceOption[];
 }
 
 export interface WheelStep {
@@ -31,7 +42,10 @@ export interface HeightWeightQuizStep {
 
 export type QuizStep = ChoiceStep | WheelStep | HeightWeightQuizStep;
 
-const LOCATION_ICONS = { "النادي": "🏋️‍♀️", "المنزل": "🏠", "المنزل والنادي معًا": "🔁" };
+/** Plain-label options, for the steps that never had icons or helper text. */
+function plain(labels: string[]): ChoiceOption[] {
+  return labels.map((label) => ({ value: label, label }));
+}
 
 export const QUIZ_STEPS: QuizStep[] = [
   {
@@ -39,36 +53,66 @@ export const QUIZ_STEPS: QuizStep[] = [
     kind: "choice",
     key: "goal",
     question: "ما هو هدفك؟",
-    options: ["خسارة الوزن", "بناء العضلات", "المحافظة على الوزن", "تحسين اللياقة"],
+    options: plain([
+      "خسارة الوزن",
+      "بناء العضلات",
+      "المحافظة على الوزن",
+      "تحسين اللياقة",
+    ]),
   },
   {
-    id: "trainingPreference",
+    id: "trainingLocation",
     kind: "choice",
-    key: "trainingPreference",
+    key: "trainingLocation",
     question: "أين تفضلين التمرين؟",
-    options: ["النادي", "المنزل", "المنزل والنادي معًا"],
-    icons: LOCATION_ICONS,
+    helper: "سنخصص التمارين حسب المكان والأدوات المتاحة لديك.",
+    options: [
+      {
+        value: "gym",
+        label: "النادي الرياضي",
+        helper: "أتمرن في الجيم مع المعدات الكاملة",
+        icon: "gym",
+      },
+      {
+        value: "home",
+        label: "المنزل",
+        helper: "أتمرن في البيت بأدوات بسيطة أو بدون أدوات",
+        icon: "home",
+      },
+    ],
   },
   {
     id: "level",
     kind: "choice",
     key: "level",
     question: "ما هو مستواك؟",
-    options: ["مبتدئة", "متوسطة", "متقدمة"],
+    options: plain(["مبتدئة", "متوسطة", "متقدمة"]),
   },
   {
-    id: "weeklyDays",
+    id: "trainingDays",
     kind: "choice",
-    key: "weeklyDays",
-    question: "كم مرة تستطيعين التمرين أسبوعياً؟",
-    options: ["2 أيام", "3 أيام", "4 أيام", "5 أيام"],
+    key: "trainingDays",
+    question: "كم يوم تتمرنين في الأسبوع؟",
+    helper: "سنبني خطتك التدريبية بناء على جدولك.",
+    options: TRAINING_DAYS_OPTIONS.map((days) => ({
+      value: days,
+      label: TRAINING_DAYS_LABEL[days],
+      helper:
+        days === 3
+          ? "مثالي للمبتدئات"
+          : days === 5
+            ? "الخيار الأكثر شيوعا"
+            : "للرياضيات المتقدمات",
+      // The numeral alone, shown large inside the tile.
+      badge: TRAINING_DAYS_LABEL[days].split(" ")[0],
+    })),
   },
   {
     id: "gender",
     kind: "choice",
     key: "gender",
     question: "الجنس",
-    options: ["أنثى", "ذكر"],
+    options: plain(["أنثى", "ذكر"]),
   },
   {
     id: "age",
@@ -90,11 +134,21 @@ export const QUIZ_STEPS: QuizStep[] = [
     kind: "choice",
     key: "programType",
     question: "وش حابه يكون برنامجك؟",
-    options: ["نظام غذائي + جدول تمارين + متابعة", "جدول تمارين + متابعة"],
+    options: plain([
+      "نظام غذائي + جدول تمارين + متابعة",
+      "جدول تمارين + متابعة",
+    ]),
   },
 ];
 
+export const TOTAL_STEPS = QUIZ_STEPS.length;
+
+/** Step ids in order — the vocabulary accepted by the ?step= deep link. */
+export const STEP_IDS = QUIZ_STEPS.map((step) => step.id);
+
 export function validateStep(step: QuizStep, answers: QuizAnswers): string | null {
   if (step.kind !== "choice") return null;
-  return validateRequiredChoice(answers[step.key] as string);
+  const value = answers[step.key];
+  // trainingDays holds 0 until answered; every other choice holds "".
+  return validateRequiredChoice(value === 0 ? "" : String(value ?? ""));
 }

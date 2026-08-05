@@ -1,4 +1,4 @@
-import { ProductKey, QuizAnswers, TrainingPreference } from "./types";
+import { type ProductKey, type QuizAnswers, TRAINING_DAYS_LABEL, type TrainingLocation } from "./types";
 
 export function calculateBmi(heightCm: number, weightKg: number): number {
   const heightM = heightCm / 100;
@@ -16,12 +16,18 @@ export function getBmiCategory(bmi: number): string {
 }
 
 // ترتيب الأولوية (لا تغيّري الترتيب):
-// 1) المنزل والنادي معًا → البكج الشامل فقط
+// 1) ٧ أيام تمرين → البكج الشامل
 // 2) المحافظة على الوزن → طلتي غير
 // 3) خسارة الوزن → باقة التنشيف
 // 4) بناء العضلات → باقة التضخيم
+//
+// The first rule replaces the old `trainingPreference === "المنزل والنادي معًا"`
+// trigger, which the redesigned location question no longer offers. Seven
+// training days carries the same signal — the most committed trainee — so
+// البكج الشامل stays reachable instead of becoming an orphaned product.
+// Every goal-based path below is unchanged.
 export function getRecommendedProduct(answers: QuizAnswers): ProductKey {
-  if (answers.trainingPreference === "المنزل والنادي معًا") {
+  if (answers.trainingDays === 7) {
     return "FULL_PACKAGE";
   }
   if (answers.goal === "المحافظة على الوزن") {
@@ -40,16 +46,17 @@ export function buildResultTitle(): string {
   return "الخطة الأنسب لك جاهزة";
 }
 
-function locationLabel(pref: TrainingPreference | ""): string {
-  if (pref === "المنزل") return "المنزل";
-  if (pref === "المنزل والنادي معًا") return "المنزل والنادي معًا";
-  return "النادي";
+function locationLabel(location: TrainingLocation | ""): string {
+  if (location === "home") return "المنزل";
+  return "النادي الرياضي";
 }
 
 export function buildResultExplanation(answers: QuizAnswers): string {
   const goalText = answers.goal || "هدفك";
-  const locationText = locationLabel(answers.trainingPreference);
+  const locationText = locationLabel(answers.trainingLocation);
   const levelText = answers.level || "مستواك الحالي";
+  const daysText = answers.trainingDays ? TRAINING_DAYS_LABEL[answers.trainingDays] : "";
+  const daysClause = daysText ? `، وتمرينك ${daysText} في الأسبوع` : "";
 
-  return `بناء على هدفك في ${goalText}، وتفضيلك التمرين في ${locationText}، ومستواك ${levelText}، جهزنا لك البرنامج الأنسب.`;
+  return `بناء على هدفك في ${goalText}، وتفضيلك التمرين في ${locationText}${daysClause}، ومستواك ${levelText}، جهزنا لك البرنامج الأنسب.`;
 }

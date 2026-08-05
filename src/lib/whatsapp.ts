@@ -1,7 +1,17 @@
 import { PRODUCT_PAYMENT_LINKS, WHATSAPP_NUMBER } from "./config";
 import { PRODUCTS } from "./products";
 import { getRecommendedProduct } from "./recommendation";
-import { BasmaFitLead, QuizAnswers } from "./types";
+import {
+  BasmaFitLead,
+  QuizAnswers,
+  TRAINING_DAYS_LABEL,
+  TRAINING_LOCATION_LABEL,
+} from "./types";
+
+/** Arabic label for the answered location, or "" when unanswered. */
+function locationText(answers: QuizAnswers): string {
+  return answers.trainingLocation ? TRAINING_LOCATION_LABEL[answers.trainingLocation] : "";
+}
 
 function buildWhatsAppUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -15,7 +25,8 @@ export function getHomeWorkoutGuideWhatsAppUrl(): string {
 function buildRecommendationReason(answers: QuizAnswers, programTitle: string): string {
   const reasonParts: string[] = [];
   if (answers.goal) reasonParts.push(`هدفك في ${answers.goal}`);
-  if (answers.trainingPreference) reasonParts.push(`تفضيلك التمرين في ${answers.trainingPreference}`);
+  const location = locationText(answers);
+  if (location) reasonParts.push(`تفضيلك التمرين في ${location}`);
   if (answers.level) reasonParts.push(`مستواك ${answers.level}`);
 
   if (reasonParts.length === 0) {
@@ -40,7 +51,10 @@ export function getResultWhatsAppUrl(answers: QuizAnswers): string {
 
   const dataLines: string[] = [];
   if (answers.goal) dataLines.push(`• الهدف: ${answers.goal}`);
-  if (answers.trainingPreference) dataLines.push(`• مكان التمرين: ${answers.trainingPreference}`);
+  const location = locationText(answers);
+  if (location) dataLines.push(`• مكان التمرين: ${location}`);
+  if (answers.trainingDays)
+    dataLines.push(`• أيام التمرين: ${TRAINING_DAYS_LABEL[answers.trainingDays]} في الأسبوع`);
   if (answers.level) dataLines.push(`• مستوى النشاط: ${answers.level}`);
   if (answers.weight) dataLines.push(`• الوزن الحالي: ${answers.weight} كجم`);
   // لا يوجد سؤال "الوزن المستهدف" في الاختبار الحالي، لذلك هذا السطر يُحذف دائمًا

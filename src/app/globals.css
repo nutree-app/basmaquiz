@@ -352,3 +352,112 @@ body:has([data-nutree-onboarding]) {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==================================================================== */
+/* Workout flow (/start and /workout)                                    */
+/*                                                                       */
+/* Reuses the onboarding's neutral surfaces (ob-bg / ob-card / ob-line …) */
+/* so the two flows read as one product, but keeps Basmafit's pink as the */
+/* accent instead of the onboarding's green. Additive only: no existing   */
+/* token is redefined, and the document-level override is scoped to       */
+/* [data-workout-flow], so /success and the guide keep their own theme.   */
+/* ==================================================================== */
+
+@theme {
+  --color-wk-pink: #d64b78;
+  --color-wk-pink-strong: #c94a73;
+  --color-wk-pink-deep: #2e1119;
+  --color-wk-pink-text: #ff8fb0;
+
+  --animate-wk-ring: wk-ring 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-wk-float: wk-float 5s ease-in-out infinite;
+  --animate-wk-orbit: wk-orbit 26s linear infinite;
+  --animate-wk-orbit-rev: wk-orbit-rev 26s linear infinite;
+  --animate-wk-pop: wk-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-wk-pulse: wk-pulse 3.2s ease-in-out infinite;
+
+  @keyframes wk-ring {
+    from {
+      stroke-dashoffset: var(--wk-ring-circumference, 754);
+    }
+    to {
+      stroke-dashoffset: var(--wk-ring-target, 190);
+    }
+  }
+
+  @keyframes wk-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-9px);
+    }
+  }
+
+  /* The orbit pair: the ring rotates the satellite outward, the counter
+     rotation keeps each icon upright so the emoji never appears upside down. */
+  @keyframes wk-orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes wk-orbit-rev {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes wk-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.12);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes wk-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.06);
+    }
+  }
+}
+
+html:has([data-workout-flow]) {
+  background: #05070d;
+  color-scheme: dark;
+}
+
+body:has([data-workout-flow]) {
+  background: #05070d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-workout-flow] *,
+  [data-workout-flow] *::before,
+  [data-workout-flow] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
