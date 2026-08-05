@@ -18,7 +18,7 @@ const PROGRESS_KEY = "basmafit_quiz_progress";
  * post-purchase record /success reads, not onboarding progress, and wiping it
  * would blank that page for someone who opened the quiz in another tab.
  */
-export const WORKOUT_STATE_KEYS = [ANSWERS_KEY, PROGRESS_KEY] as const;
+export const QUIZ_STATE_KEYS = [ANSWERS_KEY, PROGRESS_KEY] as const;
 
 /**
  * Wipes any saved run so every visit begins at step 1.
@@ -27,9 +27,9 @@ export const WORKOUT_STATE_KEYS = [ANSWERS_KEY, PROGRESS_KEY] as const;
  * keys used to hold, which is why there is no migration path any more — nothing
  * is ever read back.
  */
-export function clearWorkoutState() {
+export function resetQuizState() {
   if (typeof window === "undefined") return;
-  for (const key of WORKOUT_STATE_KEYS) {
+  for (const key of QUIZ_STATE_KEYS) {
     try {
       window.localStorage.removeItem(key);
       window.sessionStorage.removeItem(key);

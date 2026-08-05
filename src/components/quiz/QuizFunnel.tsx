@@ -15,7 +15,7 @@ import {
   TRAINING_DAYS_LABEL,
   TRAINING_LOCATION_LABEL,
 } from "@/lib/types";
-import { buildLead, clearWorkoutState, saveLead } from "@/lib/storage";
+import { buildLead, resetQuizState, saveLead } from "@/lib/storage";
 import { PRODUCTS } from "@/lib/products";
 import { trackEvent } from "@/lib/analytics";
 
@@ -52,7 +52,7 @@ function getClientBoot(): Boot {
   if (!clientBoot) {
     // Every visit starts a brand-new run: wipe anything a previous session
     // left behind so a returning visitor can never land on an old result.
-    clearWorkoutState();
+    resetQuizState();
     const requestedStep = readRequestedStep();
 
     clientBoot = {
@@ -76,8 +76,9 @@ function subscribe(): () => void {
 
 export function QuizFunnel() {
   const boot = useSyncExternalStore(subscribe, getClientBoot, getServerBoot);
-  // Remounting on the token flip lets restored progress arrive as initial
-  // state, so the server and the hydrating client render identical markup.
+  // Server and hydrating client both render the "server" boot, so the markup
+  // matches; remounting on the token flip lets the client snapshot — a cleared,
+  // blank run — arrive as initial state rather than as a post-mount update.
   return <Funnel key={boot.token} boot={boot} />;
 }
 

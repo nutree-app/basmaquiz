@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { WORKOUT_STATE_KEYS, clearWorkoutState } from "../storage";
+import { QUIZ_STATE_KEYS, resetQuizState } from "../storage";
 import { buildWorkoutPlan } from "../workout-plan";
 import { getRecommendedProduct } from "../recommendation";
 import { QUIZ_STEPS, TOTAL_STEPS, validateStep } from "../quiz-steps";
@@ -15,7 +15,7 @@ function answers(overrides: Partial<QuizAnswers> = {}): QuizAnswers {
 /* Every visit starts fresh                                             */
 /* ------------------------------------------------------------------ */
 
-test("clearWorkoutState wipes this flow's keys and nothing else", () => {
+test("resetQuizState wipes this flow's keys and nothing else", () => {
   const store = new Map<string, string>([
     ["basmafit_quiz_answers", '{"goal":"خسارة الوزن"}'],
     ["basmafit_quiz_progress", '{"screen":"result","stepIndex":7}'],
@@ -32,7 +32,7 @@ test("clearWorkoutState wipes this flow's keys and nothing else", () => {
   const previous = g.window;
   g.window = { localStorage: fake, sessionStorage: fake };
   try {
-    clearWorkoutState();
+    resetQuizState();
   } finally {
     g.window = previous;
   }
@@ -46,14 +46,14 @@ test("clearWorkoutState wipes this flow's keys and nothing else", () => {
 
 test("the flow only owns its two onboarding keys", () => {
   assert.deepEqual(
-    [...WORKOUT_STATE_KEYS],
+    [...QUIZ_STATE_KEYS],
     ["basmafit_quiz_answers", "basmafit_quiz_progress"]
   );
-  assert.ok(!WORKOUT_STATE_KEYS.includes("basmafit_lead" as never));
+  assert.ok(!QUIZ_STATE_KEYS.includes("basmafit_lead" as never));
 });
 
-test("clearWorkoutState is safe with no window (server render)", () => {
-  assert.doesNotThrow(() => clearWorkoutState());
+test("resetQuizState is safe with no window (server render)", () => {
+  assert.doesNotThrow(() => resetQuizState());
 });
 
 /* ------------------------------------------------------------------ */

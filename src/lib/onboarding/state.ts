@@ -1,12 +1,16 @@
 /**
- * Onboarding state: one reducer, one localStorage mirror.
+ * Onboarding state: one reducer, held in memory for a single visit.
+ *
+ * Nothing is persisted. Every entry to the flow clears the key this onboarding
+ * used to write and starts again at step 1, so a returning visitor can never
+ * land on an old answer set or a previously generated plan.
  *
  * Answers are stored canonically (metric, no derived values) — everything the
  * screens display comes from buildPlan() in calculations.ts, so there is a
  * single place where a number can be wrong.
  */
 
-import { useCallback, useEffect, useReducer, useState, useSyncExternalStore } from "react";
+import { useCallback, useReducer, useState, useSyncExternalStore } from "react";
 import {
   MAX_AGE,
   MAX_HEIGHT_CM,
@@ -22,7 +26,6 @@ import {
   clamp,
 } from "./calculations";
 import { ONBOARDING_STORAGE_KEY } from "./config";
-import { STEP_IDS } from "./steps";
 import type { OnboardingState } from "./types";
 
 export const INITIAL_STATE: OnboardingState = {
@@ -88,41 +91,26 @@ function normalise(state: OnboardingState): OnboardingState {
   };
 }
 
-interface PersistedShape {
-  state: OnboardingState;
-  stepIndex: number;
-}
-
-function readPersisted(): PersistedShape | null {
-  if (typeof window === "undefined") return null;
+/**
+ * Wipes this site's saved run so every entry to the flow is a new session.
+ *
+ * Deliberately narrow: it removes only ONBOARDING_STORAGE_KEY — the key this
+ * flow owns — from both local and session storage, and touches nothing else the
+ * site keeps (quiz drafts, purchase leads, language cookies, analytics).
+ */
+export function resetOnboardingState() {
+  if (typeof window === "undefined") return;
   try {
-    const raw = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<PersistedShape>;
-    if (!parsed || typeof parsed !== "object" || !parsed.state) return null;
-    return {
-      state: normalise({ ...INITIAL_STATE, ...parsed.state }),
-      stepIndex: typeof parsed.stepIndex === "number" ? parsed.stepIndex : 0,
-    };
+    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    window.sessionStorage.removeItem(ONBOARDING_STORAGE_KEY);
   } catch {
-    return null;
+    // Private mode — nothing was ever written.
   }
 }
 
-/** Reads ?step=<id|index>, so a screen can be linked to directly. */
-function readRequestedStep(): number | null {
-  const requested = new URLSearchParams(window.location.search).get("step");
-  if (!requested) return null;
-
-  const byId = STEP_IDS.indexOf(requested as (typeof STEP_IDS)[number]);
-  const index = byId >= 0 ? byId : Number(requested);
-  return Number.isInteger(index) && index >= 0 && index < STEP_IDS.length ? index : null;
-}
-
 /**
- * Where a session starts. `token` is the only field the flow compares: it
- * flips from "server" to "client" exactly once, when the browser-only sources
- * (localStorage, the query string) become readable.
+ * Where a session starts. `token` flips from "server" to "client" exactly once,
+ * when browser-only APIs become readable.
  */
 export interface OnboardingBoot {
   token: "server" | "client";
@@ -141,14 +129,13 @@ let clientBoot: OnboardingBoot | undefined;
 
 function getClientBoot(): OnboardingBoot {
   if (!clientBoot) {
-    const persisted = readPersisted();
-    const requestedStep = readRequestedStep();
-    clientBoot = {
-      token: "client",
-      state: persisted?.state ?? INITIAL_STATE,
-      // An explicit ?step= link wins over restored progress.
-      stepIndex: requestedStep ?? persisted?.stepIndex ?? 0,
-    };
+    // Opening the flow always starts a brand-new run: clear whatever a previous
+    // session left behind, then begin at step 1 with empty answers.
+    //
+    // Nothing is ever read back, so there is no path by which a finished result
+    // could reach the screen — not even for a single frame before step 1.
+    resetOnboardingState();
+    clientBoot = { token: "client", state: INITIAL_STATE, stepIndex: 0 };
   }
   return clientBoot;
 }
@@ -157,7 +144,7 @@ function getServerBoot(): OnboardingBoot {
   return SERVER_BOOT;
 }
 
-/** Nothing ever changes after the first client read, so there is no work here. */
+/** Nothing changes after the first client read, so there is no work here. */
 function subscribe(): () => void {
   return () => {};
 }
@@ -165,40 +152,25 @@ function subscribe(): () => void {
 /**
  * Resolves the starting point without a hydration mismatch.
  *
- * The server and the hydrating client both see SERVER_BOOT, so the markup
- * agrees; React then swaps in the client snapshot and re-renders on its own.
- * Doing it this way — rather than restoring inside an effect — keeps the
- * restore off the render path and out of a cascading state update.
+ * Server and hydrating client both see SERVER_BOOT, so the markup agrees; React
+ * then swaps in the client snapshot — which is the same fresh state, with the
+ * previous run cleared as a side effect — and re-renders on its own.
  */
 export function useOnboardingBoot(): OnboardingBoot {
   return useSyncExternalStore(subscribe, getClientBoot, getServerBoot);
 }
 
 /**
- * Holds the answers for one run of the flow, seeded from `boot`.
+ * Holds the answers for one run of the flow.
  *
- * The flow remounts this hook when `boot.token` flips, so restored progress
- * arrives as an initial value rather than as a post-mount update.
+ * State lives in memory for the lifetime of this page and nowhere else: moving
+ * back and forward keeps every answer, and the finished plan stays on screen
+ * for as long as the user is on it — but a reload, a new tab or a later visit
+ * all begin again at step 1.
  */
 export function useOnboardingSession(boot: OnboardingBoot) {
   const [state, dispatch] = useReducer(reducer, boot.state);
   const [stepIndex, setStepIndex] = useState(boot.stepIndex);
-
-  // Never write during the server/hydration pass: that would overwrite a saved
-  // run with the defaults before the client snapshot has been applied.
-  const canPersist = boot.token === "client";
-
-  useEffect(() => {
-    if (!canPersist) return;
-    try {
-      window.localStorage.setItem(
-        ONBOARDING_STORAGE_KEY,
-        JSON.stringify({ state, stepIndex } satisfies PersistedShape)
-      );
-    } catch {
-      // Private mode / quota — progress simply isn't restorable.
-    }
-  }, [canPersist, state, stepIndex]);
 
   const patch = useCallback((next: Partial<OnboardingState>) => {
     dispatch({ type: "patch", patch: next });

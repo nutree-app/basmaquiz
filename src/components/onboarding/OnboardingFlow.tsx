@@ -51,10 +51,9 @@ export default function OnboardingFlow() {
   const boot = useOnboardingBoot();
 
   /*
-    Remounting on `boot.token` is what lets saved progress and a ?step= link
-    arrive as initial values. Server and hydration both render the "server"
-    boot, so the markup matches; React then swaps in the client snapshot and
-    this subtree restarts once, before any interaction.
+    Server and hydration both render the "server" boot, so the markup matches;
+    React then swaps in the client snapshot — which clears any previous run and
+    starts at step 1 — and this subtree restarts once, before any interaction.
   */
   return <Flow key={boot.token} boot={boot} />;
 }

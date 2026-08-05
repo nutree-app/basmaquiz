@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * /workout and /start render the same flow — one funnel, one set of answers,
- * one localStorage key — so a visitor can arrive at either URL and continue
- * where they left off.
+ * /workout and /start render the same flow — one funnel, one set of answers.
+ * Nothing is persisted: arriving at either URL always begins a new run at step
+ * 1, so a returning visitor never lands on an old answer set or result.
  */
 export default function WorkoutPage() {
   return <QuizFunnel />;
