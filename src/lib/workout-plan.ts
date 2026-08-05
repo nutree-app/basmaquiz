@@ -1,4 +1,11 @@
-import { type Goal, type Level, type QuizAnswers, type TrainingDays, type TrainingLocation } from "./types";
+import {
+  type Gender,
+  type Goal,
+  type Level,
+  type QuizAnswers,
+  type TrainingDays,
+  type TrainingLocation,
+} from "./types";
 
 /**
  * Turns the quiz answers into a concrete weekly training plan.
@@ -8,8 +15,11 @@ import { type Goal, type Level, type QuizAnswers, type TrainingDays, type Traini
  *    bodyweight / band / light-dumbbell movements; gym users get barbell,
  *    cable and machine work.
  *  - `trainingDays` fixes the length of the schedule. The split is chosen per
- *    day-count, so someone who answered ٣ أيام can never be handed a 5-day
+ *    day-count, so someone who answered 3 أيام can never be handed a 5-day
  *    week — the array simply has three entries.
+ *
+ * Goal sets the volume prescription, level sets how many movements per session,
+ * and gender nudges the lower-body emphasis (glute-led for أنثى).
  */
 
 type FocusKey = "push" | "pull" | "lower" | "upper" | "core" | "cardio" | "fullBody";
@@ -149,15 +159,19 @@ const EXERCISES: Record<TrainingLocation, Record<FocusKey, string[]>> = {
  * training days, which is what guarantees a 3-day answer never yields 5 days.
  */
 const SPLITS: Record<TrainingDays, FocusKey[]> = {
+  2: ["upper", "lower"],
   3: ["upper", "lower", "fullBody"],
+  4: ["push", "pull", "lower", "upper"],
   5: ["push", "pull", "lower", "upper", "core"],
-  7: ["push", "pull", "lower", "upper", "core", "cardio", "fullBody"],
+  6: ["push", "pull", "lower", "upper", "core", "cardio"],
 };
 
 const SPLIT_NAME: Record<TrainingDays, string> = {
-  3: "تقسيمة ٣ أيام — علوي / سفلي / جسم كامل",
-  5: "تقسيمة ٥ أيام — دفع / سحب / أرجل / علوي / وسط",
-  7: "تقسيمة ٧ أيام — تغطية كاملة مع يوم كارديو",
+  2: "تقسيمة يومين — علوي / سفلي",
+  3: "تقسيمة 3 أيام — علوي / سفلي / جسم كامل",
+  4: "تقسيمة 4 أيام — دفع / سحب / أرجل / علوي",
+  5: "تقسيمة 5 أيام — دفع / سحب / أرجل / علوي / وسط",
+  6: "تقسيمة 6 أيام — تغطية كاملة مع يوم كارديو",
 };
 
 /** Sets and reps guidance, driven by the goal. */
@@ -202,6 +216,26 @@ const LOCATION_LABEL: Record<TrainingLocation, string> = {
   home: "المنزل",
 };
 
+/** Glute-dominant movements, floated to the front of leg day for أنثى. */
+const GLUTE_FIRST: Record<TrainingLocation, string[]> = {
+  gym: ["رفعة ميتة رومانية", "لانجز بالدمبل"],
+  home: ["جسر المؤخرة", "ركلة خلفية للمؤخرة"],
+};
+
+function orderForGender(
+  exercises: string[],
+  focus: FocusKey,
+  location: TrainingLocation,
+  gender: Gender | ""
+): string[] {
+  if (gender !== "أنثى" || (focus !== "lower" && focus !== "fullBody")) return exercises;
+
+  const preferred = GLUTE_FIRST[location];
+  const lead = exercises.filter((e) => preferred.includes(e));
+  if (lead.length === 0) return exercises;
+  return [...lead, ...exercises.filter((e) => !preferred.includes(e))];
+}
+
 /**
  * Builds the weekly plan. Returns null only when the two driving answers are
  * missing, so callers can fall back rather than render an empty schedule.
@@ -217,7 +251,12 @@ export function buildWorkoutPlan(answers: QuizAnswers): WorkoutPlan | null {
   const schedule = SPLITS[trainingDays].map((focus, index) => ({
     day: index + 1,
     title: FOCUS_TITLE[focus],
-    exercises: pool[focus].slice(0, perDay),
+    exercises: orderForGender(
+      pool[focus].slice(0, perDay),
+      focus,
+      trainingLocation,
+      answers.gender
+    ),
   }));
 
   return {

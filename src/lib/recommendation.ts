@@ -16,18 +16,18 @@ export function getBmiCategory(bmi: number): string {
 }
 
 // ترتيب الأولوية (لا تغيّري الترتيب):
-// 1) ٧ أيام تمرين → البكج الشامل
+// 1) 6 أيام تمرين → البكج الشامل
 // 2) المحافظة على الوزن → طلتي غير
 // 3) خسارة الوزن → باقة التنشيف
 // 4) بناء العضلات → باقة التضخيم
 //
 // The first rule replaces the old `trainingPreference === "المنزل والنادي معًا"`
-// trigger, which the redesigned location question no longer offers. Seven
-// training days carries the same signal — the most committed trainee — so
-// البكج الشامل stays reachable instead of becoming an orphaned product.
+// trigger, which the redesigned location question no longer offers. The top of
+// the training-day scale carries the same signal — the most committed trainee —
+// so البكج الشامل stays reachable instead of becoming an orphaned product.
 // Every goal-based path below is unchanged.
 export function getRecommendedProduct(answers: QuizAnswers): ProductKey {
-  if (answers.trainingDays === 7) {
+  if (answers.trainingDays === 6) {
     return "FULL_PACKAGE";
   }
   if (answers.goal === "المحافظة على الوزن") {

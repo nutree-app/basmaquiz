@@ -77,7 +77,7 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
 
         <div className="h-[6px] w-full overflow-hidden rounded-full bg-ob-line">
           <div
-            className="h-full rounded-full bg-wk-pink shadow-[0_0_12px_rgba(214,75,120,0.6)]"
+            className="h-full rounded-full bg-wk-pink shadow-[0_0_12px_rgba(180,70,105,0.6)]"
             style={{ width: `${percent}%`, transition: "width 80ms linear" }}
           />
         </div>

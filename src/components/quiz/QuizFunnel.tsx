@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { HeroScreen } from "./HeroScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { LoadingScreen } from "./LoadingScreen";
@@ -15,14 +15,7 @@ import {
   TRAINING_DAYS_LABEL,
   TRAINING_LOCATION_LABEL,
 } from "@/lib/types";
-import {
-  buildLead,
-  loadProgress,
-  loadQuizAnswers,
-  saveLead,
-  saveProgress,
-  saveQuizAnswers,
-} from "@/lib/storage";
+import { buildLead, clearWorkoutState, saveLead } from "@/lib/storage";
 import { PRODUCTS } from "@/lib/products";
 import { trackEvent } from "@/lib/analytics";
 
@@ -57,15 +50,17 @@ function readRequestedStep(): number | null {
 
 function getClientBoot(): Boot {
   if (!clientBoot) {
-    const progress = loadProgress(TOTAL_STEPS);
+    // Every visit starts a brand-new run: wipe anything a previous session
+    // left behind so a returning visitor can never land on an old result.
+    clearWorkoutState();
     const requestedStep = readRequestedStep();
 
     clientBoot = {
       token: "client",
-      answers: loadQuizAnswers() ?? EMPTY_ANSWERS,
-      // An explicit ?step= link wins over restored progress.
-      screen: requestedStep !== null ? "quiz" : (progress?.screen ?? "hero"),
-      stepIndex: requestedStep ?? progress?.stepIndex ?? 0,
+      answers: EMPTY_ANSWERS,
+      // ?step= still opens a screen directly, but with a blank sheet.
+      screen: requestedStep !== null ? "quiz" : "hero",
+      stepIndex: requestedStep ?? 0,
     };
   }
   return clientBoot;
@@ -92,28 +87,15 @@ function Funnel({ boot }: { boot: Boot }) {
   const [answers, setAnswers] = useState<QuizAnswers>(boot.answers);
   const [error, setError] = useState<string | null>(null);
 
-  const canPersist = boot.token === "client";
-
-  // Persist where the user is, so a refresh lands on the same screen.
-  useEffect(() => {
-    if (!canPersist || screen === "loading") return;
-    saveProgress({ screen, stepIndex });
-  }, [canPersist, screen, stepIndex]);
-
   const currentStep = QUIZ_STEPS[stepIndex];
 
   function handleChange(key: keyof QuizAnswers, value: string | number) {
-    setAnswers((prev) => {
-      const next = { ...prev, [key]: value } as QuizAnswers;
-      saveQuizAnswers(next);
-      return next;
-    });
+    setAnswers((prev) => ({ ...prev, [key]: value }) as QuizAnswers);
     setError(null);
   }
 
   function goToResult(finalAnswers: QuizAnswers) {
     setScreen("loading");
-    saveQuizAnswers(finalAnswers);
     trackEvent("quiz_completed", {
       goal: finalAnswers.goal,
       // Legacy parameter names kept so existing dashboards keep reporting —

@@ -29,7 +29,7 @@ export function WorkoutProgress({ current, total }: { current: number; total: nu
         aria-label={`الخطوة ${step} من ${total}`}
       >
         <div
-          className="h-full rounded-full bg-wk-pink shadow-[0_0_12px_rgba(214,75,120,0.6)] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="h-full rounded-full bg-wk-pink shadow-[0_0_12px_rgba(180,70,105,0.6)] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{ width: `${percent}%` }}
         />
       </div>

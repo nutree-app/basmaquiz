@@ -2,7 +2,11 @@
 
 /**
  * The welcome screen's centrepiece: a progress ring that draws itself on entry,
- * a glowing flame at the core, and nutrition + fitness icons orbiting around it.
+ * a lifter at the core, and training icons orbiting around it.
+ *
+ * Colour rule — the accent (#B44669) is used only for the ring's active arc and
+ * its glow. The track stays dark, the tiles stay dark, and every emoji keeps its
+ * own natural colours; nothing is tinted or sat on a solid accent disc.
  *
  * Built from SVG and CSS transforms rather than a bitmap so it stays crisp,
  * scales with the viewport, and respects prefers-reduced-motion (globals.css
@@ -31,12 +35,12 @@ interface Satellite {
 }
 
 const SATELLITES: Satellite[] = [
-  { emoji: "🥩", angle: 0, distance: 118, floatDuration: 4.4, delay: 0 },
-  { emoji: "🥑", angle: 60, distance: 126, floatDuration: 5.2, delay: 0.35 },
-  { emoji: "🍞", angle: 120, distance: 116, floatDuration: 4.8, delay: 0.7 },
-  { emoji: "🏋️‍♀️", angle: 180, distance: 128, floatDuration: 5.6, delay: 1.05 },
-  { emoji: "🥦", angle: 240, distance: 118, floatDuration: 4.6, delay: 1.4 },
-  { emoji: "💪", angle: 300, distance: 124, floatDuration: 5.0, delay: 1.75 },
+  { emoji: "💪", angle: 0, distance: 118, floatDuration: 4.4, delay: 0 },
+  { emoji: "🏃‍♀️", angle: 60, distance: 126, floatDuration: 5.2, delay: 0.35 },
+  { emoji: "🤸‍♀️", angle: 120, distance: 116, floatDuration: 4.8, delay: 0.7 },
+  { emoji: "🔥", angle: 180, distance: 128, floatDuration: 5.6, delay: 1.05 },
+  { emoji: "🧘‍♀️", angle: 240, distance: 118, floatDuration: 4.6, delay: 1.4 },
+  { emoji: "⏱️", angle: 300, distance: 124, floatDuration: 5.0, delay: 1.75 },
 ];
 
 export function PlanHeroVisual() {
@@ -75,26 +79,26 @@ export function PlanHeroVisual() {
               "--wk-ring-circumference": CIRCUMFERENCE,
               "--wk-ring-target": dashTarget,
               strokeDashoffset: dashTarget,
-              filter: "drop-shadow(0 0 8px rgba(214,75,120,0.7))",
+              filter: "drop-shadow(0 0 8px rgba(180,70,105,0.7))",
             } as React.CSSProperties
           }
         />
         <defs>
           <linearGradient id="wk-ring-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#ff8fb0" />
-            <stop offset="100%" stopColor="#d64b78" />
+            <stop offset="0%" stopColor="#e98fa9" />
+            <stop offset="100%" stopColor="#b44669" />
           </linearGradient>
         </defs>
       </svg>
 
-      {/* Flame core. */}
+      {/* Core: the lifter, in its natural emoji colours on a dark disc. */}
       <div className="absolute inset-0 grid place-items-center">
-        <div className="animate-wk-pop grid h-[86px] w-[86px] place-items-center rounded-full border border-wk-pink/40 bg-[#1a0f15] shadow-[0_0_36px_-6px_rgba(214,75,120,0.8)]">
-          <span className="animate-wk-float text-[40px] leading-none">🔥</span>
+        <div className="animate-wk-pop grid h-[92px] w-[92px] place-items-center rounded-full border border-wk-pink/40 bg-[#170d12] shadow-[0_0_36px_-6px_rgba(180,70,105,0.8)]">
+          <span className="animate-wk-float text-[44px] leading-none">🏋🏻‍♀️</span>
         </div>
       </div>
 
-      {/* Orbiting nutrition + fitness icons. */}
+      {/* Orbiting training icons. */}
       <div className="animate-wk-orbit absolute inset-0">
         {SATELLITES.map((s, i) => (
           <div

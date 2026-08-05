@@ -9,8 +9,8 @@ export interface ChoiceOption {
   helper?: string;
   /** Short text shown large inside the rounded tile — used by the training-days step. */
   badge?: string;
-  /** Named line icon drawn by WorkoutOptionCard. */
-  icon?: "gym" | "home";
+  /** Emoji shown inside the tile, in its own natural colours. */
+  emoji?: string;
 }
 
 export interface ChoiceStep {
@@ -42,6 +42,14 @@ export interface HeightWeightQuizStep {
 
 export type QuizStep = ChoiceStep | WheelStep | HeightWeightQuizStep;
 
+const DAYS_HELPER: Record<number, string> = {
+  2: "بداية خفيفة ومناسبة للانطلاق",
+  3: "مثالي للمبتدئات",
+  4: "توازن جيد بين النتيجة والوقت",
+  5: "الخيار الأكثر شيوعا",
+  6: "للرياضيات المتقدمات",
+};
+
 /** Plain-label options, for the steps that never had icons or helper text. */
 function plain(labels: string[]): ChoiceOption[] {
   return labels.map((label) => ({ value: label, label }));
@@ -61,51 +69,11 @@ export const QUIZ_STEPS: QuizStep[] = [
     ]),
   },
   {
-    id: "trainingLocation",
-    kind: "choice",
-    key: "trainingLocation",
-    question: "أين تفضلين التمرين؟",
-    helper: "سنخصص التمارين حسب المكان والأدوات المتاحة لديك.",
-    options: [
-      {
-        value: "gym",
-        label: "النادي الرياضي",
-        helper: "أتمرن في الجيم مع المعدات الكاملة",
-        icon: "gym",
-      },
-      {
-        value: "home",
-        label: "المنزل",
-        helper: "أتمرن في البيت بأدوات بسيطة أو بدون أدوات",
-        icon: "home",
-      },
-    ],
-  },
-  {
     id: "level",
     kind: "choice",
     key: "level",
     question: "ما هو مستواك؟",
     options: plain(["مبتدئة", "متوسطة", "متقدمة"]),
-  },
-  {
-    id: "trainingDays",
-    kind: "choice",
-    key: "trainingDays",
-    question: "كم يوم تتمرنين في الأسبوع؟",
-    helper: "سنبني خطتك التدريبية بناء على جدولك.",
-    options: TRAINING_DAYS_OPTIONS.map((days) => ({
-      value: days,
-      label: TRAINING_DAYS_LABEL[days],
-      helper:
-        days === 3
-          ? "مثالي للمبتدئات"
-          : days === 5
-            ? "الخيار الأكثر شيوعا"
-            : "للرياضيات المتقدمات",
-      // The numeral alone, shown large inside the tile.
-      badge: TRAINING_DAYS_LABEL[days].split(" ")[0],
-    })),
   },
   {
     id: "gender",
@@ -138,6 +106,41 @@ export const QUIZ_STEPS: QuizStep[] = [
       "نظام غذائي + جدول تمارين + متابعة",
       "جدول تمارين + متابعة",
     ]),
+  },
+  {
+    id: "trainingLocation",
+    kind: "choice",
+    key: "trainingLocation",
+    question: "وين مكان التمرين؟",
+    helper: "سنخصص التمارين حسب المكان والأدوات المتاحة لديك.",
+    options: [
+      {
+        value: "home",
+        label: "المنزل",
+        helper: "أتمرن في البيت بأدوات بسيطة أو بدون أدوات",
+        emoji: "\u{1F3E0}",
+      },
+      {
+        value: "gym",
+        label: "النادي الرياضي",
+        helper: "أتمرن في الجيم مع المعدات الكاملة",
+        emoji: "\u{1F3CB}\u{1F3FB}\u{200D}\u{2640}\u{FE0F}",
+      },
+    ],
+  },
+  {
+    id: "trainingDays",
+    kind: "choice",
+    key: "trainingDays",
+    question: "كم يوم تتمرن بالأسبوع؟",
+    helper: "سنبني خطتك التدريبية بناء على جدولك.",
+    options: TRAINING_DAYS_OPTIONS.map((days) => ({
+      value: days,
+      label: TRAINING_DAYS_LABEL[days],
+      helper: DAYS_HELPER[days],
+      // The numeral alone, shown large inside the tile.
+      badge: String(days),
+    })),
   },
 ];
 

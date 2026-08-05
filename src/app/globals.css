@@ -364,10 +364,14 @@ body:has([data-nutree-onboarding]) {
 /* ==================================================================== */
 
 @theme {
-  --color-wk-pink: #d64b78;
-  --color-wk-pink-strong: #c94a73;
-  --color-wk-pink-deep: #2e1119;
-  --color-wk-pink-text: #ff8fb0;
+  /* Brand accent for the workout flow. Stands in for the onboarding's green
+     everywhere it appears: progress fill, primary buttons, selected cards and
+     their glow, and small highlighted numerals. Never used as a solid backdrop
+     behind an emoji — emojis keep their own natural colours. */
+  --color-wk-pink: #b44669;
+  --color-wk-pink-strong: #9b3a59;
+  --color-wk-pink-deep: #2a1018;
+  --color-wk-pink-text: #e98fa9;
 
   --animate-wk-ring: wk-ring 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-wk-float: wk-float 5s ease-in-out infinite;

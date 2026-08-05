@@ -12,7 +12,7 @@ export type Goal =
 export type TrainingLocation = "gym" | "home";
 
 /** Training days per week. The generated schedule always has exactly this many days. */
-export type TrainingDays = 3 | 5 | 7;
+export type TrainingDays = 2 | 3 | 4 | 5 | 6;
 
 export type Level = "مبتدئة" | "متوسطة" | "متقدمة";
 
@@ -82,9 +82,11 @@ export const TRAINING_LOCATION_LABEL: Record<TrainingLocation, string> = {
 
 /** Arabic label for a training-day count, e.g. 3 -> "٣ أيام". */
 export const TRAINING_DAYS_LABEL: Record<TrainingDays, string> = {
-  3: "٣ أيام",
-  5: "٥ أيام",
-  7: "٧ أيام",
+  2: "2 أيام",
+  3: "3 أيام",
+  4: "4 أيام",
+  5: "5 أيام",
+  6: "6 أيام",
 };
 
-export const TRAINING_DAYS_OPTIONS: TrainingDays[] = [3, 5, 7];
+export const TRAINING_DAYS_OPTIONS: TrainingDays[] = [2, 3, 4, 5, 6];
