@@ -22,9 +22,9 @@ import {
  * and gender nudges the lower-body emphasis (glute-led for أنثى).
  */
 
-type FocusKey = "push" | "pull" | "lower" | "upper" | "core" | "cardio" | "fullBody";
+export type FocusKey = "push" | "pull" | "lower" | "upper" | "core" | "cardio" | "fullBody";
 
-const FOCUS_TITLE: Record<FocusKey, string> = {
+export const FOCUS_TITLE: Record<FocusKey, string> = {
   push: "دفع — صدر وكتف وترايسبس",
   pull: "سحب — ظهر وبايسبس",
   lower: "الجزء السفلي — أرجل ومؤخرة",
@@ -35,7 +35,7 @@ const FOCUS_TITLE: Record<FocusKey, string> = {
 };
 
 /** Ordered pools. The first entries are the compound lifts, so trimming keeps them. */
-const EXERCISES: Record<TrainingLocation, Record<FocusKey, string[]>> = {
+export const EXERCISES: Record<TrainingLocation, Record<FocusKey, string[]>> = {
   gym: {
     push: [
       "ضغط بنش بالبار",
@@ -158,7 +158,7 @@ const EXERCISES: Record<TrainingLocation, Record<FocusKey, string[]>> = {
  * One split per allowed day-count. The length of each array *is* the number of
  * training days, which is what guarantees a 3-day answer never yields 5 days.
  */
-const SPLITS: Record<TrainingDays, FocusKey[]> = {
+export const SPLITS: Record<TrainingDays, FocusKey[]> = {
   2: ["upper", "lower"],
   3: ["upper", "lower", "fullBody"],
   4: ["push", "pull", "lower", "upper"],
@@ -166,7 +166,7 @@ const SPLITS: Record<TrainingDays, FocusKey[]> = {
   6: ["push", "pull", "lower", "upper", "core", "cardio"],
 };
 
-const SPLIT_NAME: Record<TrainingDays, string> = {
+export const SPLIT_NAME: Record<TrainingDays, string> = {
   2: "تقسيمة يومين — علوي / سفلي",
   3: "تقسيمة 3 أيام — علوي / سفلي / جسم كامل",
   4: "تقسيمة 4 أيام — دفع / سحب / أرجل / علوي",

@@ -2,11 +2,12 @@
 
 /**
  * The welcome screen's centrepiece: a progress ring that draws itself on entry,
- * a lifter at the core, and training icons orbiting around it.
+ * a flame at the core, and three nutrition/training icons orbiting around it.
  *
- * Colour rule — the accent (#B44669) is used only for the ring's active arc and
- * its glow. The track stays dark, the tiles stay dark, and every emoji keeps its
- * own natural colours; nothing is tinted or sat on a solid accent disc.
+ * Matches the Nutree reference: dark track, warm orange-to-red active arc, a
+ * dark centre disc holding the flame, and three rounded icon cards riding the
+ * ring. Every emoji keeps its own natural colours — nothing is tinted, and no
+ * emoji sits on a solid accent disc.
  *
  * Built from SVG and CSS transforms rather than a bitmap so it stays crisp,
  * scales with the viewport, and respects prefers-reduced-motion (globals.css
@@ -34,13 +35,11 @@ interface Satellite {
   delay: number;
 }
 
+/** Steak, avocado and the lifter — evenly spaced around the ring. */
 const SATELLITES: Satellite[] = [
-  { emoji: "💪", angle: 0, distance: 118, floatDuration: 4.4, delay: 0 },
-  { emoji: "🏃‍♀️", angle: 60, distance: 126, floatDuration: 5.2, delay: 0.35 },
-  { emoji: "🤸‍♀️", angle: 120, distance: 116, floatDuration: 4.8, delay: 0.7 },
-  { emoji: "🔥", angle: 180, distance: 128, floatDuration: 5.6, delay: 1.05 },
-  { emoji: "🧘‍♀️", angle: 240, distance: 118, floatDuration: 4.6, delay: 1.4 },
-  { emoji: "⏱️", angle: 300, distance: 124, floatDuration: 5.0, delay: 1.75 },
+  { emoji: "🥩", angle: 45, distance: 120, floatDuration: 4.6, delay: 0 },
+  { emoji: "🥑", angle: 165, distance: 120, floatDuration: 5.3, delay: 0.4 },
+  { emoji: "🏋🏻‍♀️", angle: 285, distance: 120, floatDuration: 4.9, delay: 0.8 },
 ];
 
 export function PlanHeroVisual() {
@@ -52,7 +51,7 @@ export function PlanHeroVisual() {
       aria-hidden
     >
       {/* Soft glow behind everything. */}
-      <div className="animate-wk-pulse absolute inset-[18%] rounded-full bg-wk-pink/25 blur-3xl" />
+      <div className="animate-wk-pulse absolute inset-[18%] rounded-full bg-[#F0562D]/25 blur-3xl" />
 
       {/* Ring. Rotated so the stroke starts at 12 o'clock. */}
       <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full -rotate-90">
@@ -79,22 +78,22 @@ export function PlanHeroVisual() {
               "--wk-ring-circumference": CIRCUMFERENCE,
               "--wk-ring-target": dashTarget,
               strokeDashoffset: dashTarget,
-              filter: "drop-shadow(0 0 8px rgba(180,70,105,0.7))",
+              filter: "drop-shadow(0 0 9px rgba(240,90,45,0.75))",
             } as React.CSSProperties
           }
         />
         <defs>
           <linearGradient id="wk-ring-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#e98fa9" />
-            <stop offset="100%" stopColor="#b44669" />
+            <stop offset="0%" stopColor="#F97316" />
+            <stop offset="100%" stopColor="#E0453B" />
           </linearGradient>
         </defs>
       </svg>
 
-      {/* Core: the lifter, in its natural emoji colours on a dark disc. */}
+      {/* Core: the flame, in its natural colours on a dark disc. */}
       <div className="absolute inset-0 grid place-items-center">
-        <div className="animate-wk-pop grid h-[92px] w-[92px] place-items-center rounded-full border border-wk-pink/40 bg-[#170d12] shadow-[0_0_36px_-6px_rgba(180,70,105,0.8)]">
-          <span className="animate-wk-float text-[44px] leading-none">🏋🏻‍♀️</span>
+        <div className="animate-wk-pop grid h-[104px] w-[104px] place-items-center rounded-full border border-[#F0562D]/35 bg-[#2A1409] shadow-[0_0_40px_-6px_rgba(240,90,45,0.75)]">
+          <span className="animate-wk-float text-[46px] leading-none">🔥</span>
         </div>
       </div>
 

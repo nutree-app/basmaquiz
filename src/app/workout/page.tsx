@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { QuizFunnel } from "@/components/quiz/QuizFunnel";
+import WorkoutOnboardingFlow from "@/components/workout-onboarding/WorkoutOnboardingFlow";
 
 export const metadata: Metadata = {
   title: "خطة التمرين | بسمة فت",
@@ -8,10 +8,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * /workout and /start render the same flow — one funnel, one set of answers.
- * Nothing is persisted: arriving at either URL always begins a new run at step
- * 1, so a returning visitor never lands on an old answer set or result.
+ * The 20-step Basmafit workout onboarding. /start keeps the original quiz
+ * funnel unchanged — only this route was rebuilt.
  */
 export default function WorkoutPage() {
-  return <QuizFunnel />;
+  return <WorkoutOnboardingFlow />;
 }
