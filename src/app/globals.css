@@ -137,3 +137,218 @@ input[type="number"] {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* ==================================================================== */
+/* Nutree onboarding (/onboarding)                                       */
+/*                                                                       */
+/* Its own dark palette, entirely additive: these tokens create new       */
+/* `ob-*` utilities and never redefine an existing one, and every rule    */
+/* below is scoped to the onboarding subtree, so the Basmafit quiz        */
+/* pages are untouched.                                                   */
+/* ==================================================================== */
+
+@theme {
+  --color-ob-surround: #05070d;
+  --color-ob-bg: #0a0e1a;
+  --color-ob-card: #151a2b;
+  --color-ob-card-alt: #1b2133;
+  --color-ob-line: #232a3d;
+  --color-ob-green: #2bd96b;
+  --color-ob-green-deep: #0f2e1f;
+  --color-ob-green-text: #4ade80;
+  --color-ob-blue: #0a84ff;
+  --color-ob-blue-deep: #10243d;
+  --color-ob-blue-text: #5ab0ff;
+  --color-ob-amber: #f5a524;
+  --color-ob-amber-deep: #33240d;
+  --color-ob-red: #ff5a5f;
+  --color-ob-red-deep: #2c1418;
+  --color-ob-text: #ffffff;
+  --color-ob-text-dim: #8e97ab;
+  --color-ob-text-faint: #5c6579;
+
+  --animate-ob-enter: ob-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-ob-rise: ob-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-ob-check: ob-check 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-ob-wave: ob-wave 7s linear infinite;
+  --animate-ob-glow: ob-glow 3.5s ease-in-out infinite;
+  --animate-ob-sheen: ob-sheen 2.6s ease-in-out infinite;
+
+  @keyframes ob-enter {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ob-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ob-check {
+    0% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.25);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes ob-wave {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes ob-glow {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 0.75;
+    }
+  }
+
+  @keyframes ob-sheen {
+    from {
+      transform: translateX(-120%);
+    }
+    to {
+      transform: translateX(220%);
+    }
+  }
+}
+
+/* The flow fills the viewport, but overscroll and the browser UI still
+   sample the document colours — swap them to the onboarding's dark surround
+   while it is mounted. Pure CSS, so there is no flash on first paint. */
+html:has([data-nutree-onboarding]) {
+  background: #05070d;
+  color-scheme: dark;
+}
+
+body:has([data-nutree-onboarding]) {
+  background: #05070d;
+}
+
+/* Fades the wheel-picker rows out at the top and bottom edges. */
+.ob-wheel-mask {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 22%,
+    #000 78%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+
+.ob-ruler-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+/* The water figure is drawn as an outline so the wave reads through it. */
+.ob-outline-number {
+  color: transparent;
+  -webkit-text-stroke: 2px #3b9bff;
+  paint-order: stroke fill;
+}
+
+/* Pace slider — a styled range input rather than a hand-rolled drag
+   surface, so keyboard and screen-reader support come for free. */
+.ob-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 26px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ob-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ob-range-track, #232a3d);
+}
+
+.ob-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: #232a3d;
+}
+
+.ob-range::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: #0a84ff;
+}
+
+.ob-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -8px;
+  height: 22px;
+  width: 22px;
+  border-radius: 999px;
+  background: #0a84ff;
+  border: none;
+  box-shadow: 0 2px 10px rgba(10, 132, 255, 0.55);
+  transition: transform 0.15s ease;
+}
+
+.ob-range::-moz-range-thumb {
+  height: 22px;
+  width: 22px;
+  border: none;
+  border-radius: 999px;
+  background: #0a84ff;
+  box-shadow: 0 2px 10px rgba(10, 132, 255, 0.55);
+}
+
+.ob-range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+.ob-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #5ab0ff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-nutree-onboarding] *,
+  [data-nutree-onboarding] *::before,
+  [data-nutree-onboarding] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
