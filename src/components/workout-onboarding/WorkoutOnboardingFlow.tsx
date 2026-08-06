@@ -30,7 +30,7 @@ import TargetWeightStep from "@/components/onboarding/steps/TargetWeightStep";
 import WaterStep from "@/components/onboarding/steps/WaterStep";
 import type { StepProps } from "@/components/onboarding/stepProps";
 import { WorkoutShell } from "@/components/workout/WorkoutShell";
-import { HeroScreen } from "@/components/quiz/HeroScreen";
+import { WorkoutHeroScreen } from "@/components/workout-onboarding/WorkoutHeroScreen";
 import { trackEvent } from "@/lib/analytics";
 import {
   STEP_IDS,
@@ -126,7 +126,7 @@ function Flow({ boot }: { boot: WorkoutBoot }) {
   if (stepId === "welcome") {
     return (
       <WorkoutShell>
-        <HeroScreen onStart={goNext} />
+        <WorkoutHeroScreen onStart={goNext} />
       </WorkoutShell>
     );
   }

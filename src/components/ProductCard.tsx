@@ -1,12 +1,12 @@
 import { Product } from "@/lib/products";
-import { WorkoutPrimaryButton } from "./workout/WorkoutButtons";
+import { PrimaryLinkButton, SecondaryLinkButton } from "./buttons";
 
 function CheckIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0">
       <path
         d="M5 13l4 4L19 7"
-        stroke="#4ADE80"
+        stroke="#34D399"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -31,22 +31,34 @@ function XIcon() {
 
 export function ProductCard({
   product,
+  highlighted = false,
   onSelect,
 }: {
   product: Product;
+  highlighted?: boolean;
   onSelect: () => void;
 }) {
-  return (
-    <div className="relative z-10 flex flex-col rounded-[26px] border border-wk-pink/40 bg-ob-card p-6 shadow-[0_0_0_1px_rgba(180,70,105,0.25),0_18px_44px_-22px_rgba(180,70,105,0.7)]">
-      <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-wk-pink px-4 py-1 text-xs font-extrabold text-white">
-        الأكثر طلبا
-      </span>
+  const ActionButton = highlighted ? PrimaryLinkButton : SecondaryLinkButton;
 
-      <h3 className="mt-2 text-center text-[20px] font-extrabold text-white">
+  return (
+    <div
+      className={`relative flex flex-col rounded-3xl border p-6 transition-transform ${
+        highlighted
+          ? "glow-pink z-10 border-pink bg-card-soft sm:scale-[1.03]"
+          : "border-border bg-card"
+      }`}
+    >
+      {highlighted && (
+        <span className="absolute -top-3 right-1/2 translate-x-1/2 whitespace-nowrap rounded-full bg-pink px-4 py-1 text-xs font-extrabold text-white">
+          الأكثر طلبا
+        </span>
+      )}
+
+      <h3 className="mt-2 text-center text-xl font-extrabold text-foreground">
         {product.title}
       </h3>
 
-      <p className="mt-2 text-center text-[30px] font-extrabold text-wk-pink-text">
+      <p className="mt-2 text-center text-3xl font-black text-yellow">
         {product.price}
       </p>
 
@@ -54,19 +66,23 @@ export function ProductCard({
         {product.features.map((feature) => (
           <li key={feature.label} className="flex items-center gap-2 text-sm">
             {feature.included ? <CheckIcon /> : <XIcon />}
-            <span className={feature.included ? "text-white/90" : "text-ob-text-faint"}>
+            <span className={feature.included ? "text-foreground" : "text-muted opacity-70"}>
               {feature.label}
             </span>
           </li>
         ))}
       </ul>
 
-      <p className="mt-4 text-center text-xs leading-5 text-ob-text-faint">
-        الخيار الأشمل — يعطيك قيمة أكبر ونتائج أوضح.
+      <p className="mt-4 text-center text-xs leading-5 text-muted">
+        {highlighted
+          ? "الخيار الأشمل — يعطيك قيمة أكبر ونتائج أوضح."
+          : "خيار بسيط ومباشر لو تبين تبدئين الآن."}
       </p>
 
       <div className="mt-5">
-        <WorkoutPrimaryButton onClick={onSelect}>{product.buttonLabel}</WorkoutPrimaryButton>
+        <ActionButton href={product.link} onClick={onSelect}>
+          {product.buttonLabel}
+        </ActionButton>
       </div>
     </div>
   );

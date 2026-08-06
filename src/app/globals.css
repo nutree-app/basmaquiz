@@ -354,13 +354,14 @@ body:has([data-nutree-onboarding]) {
 }
 
 /* ==================================================================== */
-/* Workout flow (/start and /workout)                                    */
+/* Workout flow (/workout only)                                          */
 /*                                                                       */
 /* Reuses the onboarding's neutral surfaces (ob-bg / ob-card / ob-line …) */
 /* so the two flows read as one product, but keeps Basmafit's pink as the */
 /* accent instead of the onboarding's green. Additive only: no existing   */
 /* token is redefined, and the document-level override is scoped to       */
-/* [data-workout-flow], so /success and the guide keep their own theme.   */
+/* [data-workout-flow], which only WorkoutShell sets — so /start, /success */
+/* and the guide keep the original Basmafit theme.                        */
 /* ==================================================================== */
 
 @theme {

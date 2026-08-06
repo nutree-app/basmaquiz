@@ -73,7 +73,7 @@ export function WheelPicker({
     <div className="relative mx-auto w-full max-w-[180px]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-1/2 z-10 h-11 -translate-y-1/2 rounded-xl border-2 border-wk-pink bg-wk-pink/10"
+        className="pointer-events-none absolute inset-x-0 top-1/2 z-10 h-11 -translate-y-1/2 rounded-xl border-2 border-pink bg-pink/5"
       />
       <div
         ref={containerRef}
@@ -98,11 +98,11 @@ export function WheelPicker({
                 opacity,
                 transform: `scale(${scale})`,
               }}
-              className="flex w-full items-center justify-center text-xl font-extrabold text-white transition-all duration-150"
+              className="flex w-full items-center justify-center text-xl font-black text-foreground transition-all duration-150"
             >
               {v}
               {suffix ? (
-                <span className="mr-1 text-sm font-bold text-ob-text-dim">{suffix}</span>
+                <span className="mr-1 text-sm font-bold text-muted">{suffix}</span>
               ) : null}
             </button>
           );

@@ -1,17 +1,9 @@
-import {
-  type BasmaFitLead,
-  type ProductKey,
-  type QuizAnswers,
-  TRAINING_DAYS_LABEL,
-  TRAINING_LOCATION_LABEL,
-  type TrainingDays,
-  type TrainingLocation,
-} from "./types";
+import { type BasmaFitLead, type ProductKey, type QuizAnswers } from "./types";
 import { calculateBmi } from "./recommendation";
 
 const ANSWERS_KEY = "basmafit_quiz_answers";
-const LEAD_KEY = "basmafit_lead";
 const PROGRESS_KEY = "basmafit_quiz_progress";
+const LEAD_KEY = "basmafit_lead";
 
 /**
  * Keys this flow owns. `basmafit_lead` is deliberately absent: it is the
@@ -21,11 +13,8 @@ const PROGRESS_KEY = "basmafit_quiz_progress";
 export const QUIZ_STATE_KEYS = [ANSWERS_KEY, PROGRESS_KEY] as const;
 
 /**
- * Wipes any saved run so every visit begins at step 1.
- *
- * Called once when the funnel mounts. It also clears the older shapes those two
- * keys used to hold, which is why there is no migration path any more — nothing
- * is ever read back.
+ * Wipes any saved run so every visit begins at step 1. Called once when the
+ * funnel mounts — nothing is ever read back, so there is no migration path.
  */
 export function resetQuizState() {
   if (typeof window === "undefined") return;
@@ -39,19 +28,6 @@ export function resetQuizState() {
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Lead                                                                 */
-/* ------------------------------------------------------------------ */
-
-/** Arabic labels for the lead and the success page, which read the legacy names. */
-export function trainingLocationLabel(value: TrainingLocation | ""): string {
-  return value ? TRAINING_LOCATION_LABEL[value] : "";
-}
-
-export function trainingDaysLabel(value: TrainingDays | 0): string {
-  return value ? TRAINING_DAYS_LABEL[value] : "";
-}
-
 export function buildLead(
   answers: QuizAnswers,
   recommendedPlan: string,
@@ -61,11 +37,9 @@ export function buildLead(
 ): BasmaFitLead {
   return {
     goal: answers.goal,
-    // Kept under the original keys so /success — and any dashboard already
-    // reading `trainingPreference` / `weeklyDays` — keeps working unchanged.
-    trainingPreference: trainingLocationLabel(answers.trainingLocation),
+    trainingPreference: answers.trainingPreference,
     level: answers.level,
-    weeklyDays: trainingDaysLabel(answers.trainingDays),
+    weeklyDays: answers.weeklyDays,
     gender: answers.gender,
     age: answers.age,
     height: answers.height,

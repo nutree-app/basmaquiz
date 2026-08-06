@@ -1,4 +1,4 @@
-import { type ProductKey, type QuizAnswers, TRAINING_DAYS_LABEL, type TrainingLocation } from "./types";
+import { type ProductKey, type QuizAnswers, type TrainingPreference } from "./types";
 
 export function calculateBmi(heightCm: number, weightKg: number): number {
   const heightM = heightCm / 100;
@@ -15,48 +15,90 @@ export function getBmiCategory(bmi: number): string {
   return "سمنة";
 }
 
+const TABLES_ONLY: string = "جدول تمارين فقط، بدون متابعة وبدون نظام غذائي";
+const FULL_PROGRAM: string = "نظام غذائي + جدول تمارين + متابعة";
+
+// من اختارت "جدول تمارين فقط" ما تحتاج متابعة ولا نظام غذائي، فالترشيح يصير جدول
+// أو جدولين حسب مكان التمرين فقط
+function wantsTablesOnly(answers: QuizAnswers): boolean {
+  return answers.programType === TABLES_ONLY;
+}
+
+// الهدفان التاليان لهما منتج مخصص يغني عن عرض أي بديل
+const GOAL_PRODUCT: Partial<Record<string, ProductKey>> = {
+  "خسارة الوزن": "CUTTING_PACKAGE",
+  "بناء العضلات": "BULKING_PACKAGE",
+};
+
+const GOAL_EXPLANATION: Partial<Record<string, string>> = {
+  "خسارة الوزن": "برنامج التنشيف هو البرنامج الأنسب لك",
+  "بناء العضلات": "برنامج التضخيم هو البرنامج الأنسب لك",
+};
+
+function goalProduct(answers: QuizAnswers): ProductKey | null {
+  return answers.goal ? GOAL_PRODUCT[answers.goal] ?? null : null;
+}
+
+function tablesForPreference(preference: TrainingPreference | ""): ProductKey[] {
+  if (preference === "المنزل") return ["HOME_TABLE"];
+  if (preference === "المنزل والنادي معًا") return ["HOME_TABLE", "GYM_TABLE"];
+  return ["GYM_TABLE"];
+}
+
 // ترتيب الأولوية (لا تغيّري الترتيب):
-// 1) 6 أيام تمرين → البكج الشامل
-// 2) المحافظة على الوزن → طلتي غير
-// 3) خسارة الوزن → باقة التنشيف
-// 4) بناء العضلات → باقة التضخيم
-//
-// The first rule replaces the old `trainingPreference === "المنزل والنادي معًا"`
-// trigger, which the redesigned location question no longer offers. The top of
-// the training-day scale carries the same signal — the most committed trainee —
-// so البكج الشامل stays reachable instead of becoming an orphaned product.
-// Every goal-based path below is unchanged.
-export function getRecommendedProduct(answers: QuizAnswers): ProductKey {
-  if (answers.trainingDays === 6) {
-    return "FULL_PACKAGE";
+// 1) جدول تمارين فقط → الجدول/الجداول حسب مكان التمرين
+// 2) هدف له منتج مخصص → باقة التنشيف أو التضخيم
+// 3) نظام غذائي + جدول + متابعة → طلتي غير
+// 4) غير ذلك → التضخيم لبناء العضلات، وإلا التنشيف
+export function getRecommendedProducts(answers: QuizAnswers): ProductKey[] {
+  if (wantsTablesOnly(answers)) {
+    return tablesForPreference(answers.trainingPreference);
   }
-  if (answers.goal === "المحافظة على الوزن") {
-    return "TALATI_GHEIR";
-  }
-  if (answers.goal === "خسارة الوزن") {
-    return "CUTTING_PACKAGE";
-  }
-  if (answers.goal === "بناء العضلات") {
-    return "BULKING_PACKAGE";
-  }
-  return "CUTTING_PACKAGE";
+
+  const exclusive = goalProduct(answers);
+  if (exclusive) return [exclusive];
+
+  if (answers.programType === FULL_PROGRAM) return ["TALATI_GHEIR"];
+
+  return [answers.goal === "بناء العضلات" ? "BULKING_PACKAGE" : "CUTTING_PACKAGE"];
+}
+
+export function getPrimaryRecommendation(answers: QuizAnswers): ProductKey {
+  return getRecommendedProducts(answers)[0];
+}
+
+// عندما يكون الترشيح حصريًا لا نعرض قسم "أو جدول تمارين بدون متابعة" في صفحة النتيجة
+export function hasExclusiveRecommendation(answers: QuizAnswers): boolean {
+  return wantsTablesOnly(answers) || goalProduct(answers) !== null;
 }
 
 export function buildResultTitle(): string {
   return "الخطة الأنسب لك جاهزة";
 }
 
-function locationLabel(location: TrainingLocation | ""): string {
-  if (location === "home") return "المنزل";
-  return "النادي الرياضي";
+function locationLabel(pref: TrainingPreference | ""): string {
+  if (pref === "المنزل") return "المنزل";
+  if (pref === "المنزل والنادي معًا") return "المنزل والنادي معًا";
+  return "النادي";
 }
 
 export function buildResultExplanation(answers: QuizAnswers): string {
-  const goalText = answers.goal || "هدفك";
-  const locationText = locationLabel(answers.trainingLocation);
-  const levelText = answers.level || "مستواك الحالي";
-  const daysText = answers.trainingDays ? TRAINING_DAYS_LABEL[answers.trainingDays] : "";
-  const daysClause = daysText ? `، وتمرينك ${daysText} في الأسبوع` : "";
+  if (wantsTablesOnly(answers)) {
+    if (answers.trainingPreference === "المنزل") {
+      return "جدول تمارين المنزل هو الخيار الانسب لك";
+    }
+    if (answers.trainingPreference === "المنزل والنادي معًا") {
+      return "الجداول الانسب لاختياراتك";
+    }
+    return "جدول تمارين النادي هو الخيار الانسب لك";
+  }
 
-  return `بناء على هدفك في ${goalText}، وتفضيلك التمرين في ${locationText}${daysClause}، ومستواك ${levelText}، جهزنا لك البرنامج الأنسب.`;
+  const goalExplanation = answers.goal ? GOAL_EXPLANATION[answers.goal] : undefined;
+  if (goalExplanation) return goalExplanation;
+
+  const goalText = answers.goal || "هدفك";
+  const locationText = locationLabel(answers.trainingPreference);
+  const levelText = answers.level || "مستواك الحالي";
+
+  return `بناء على هدفك في ${goalText}، وتفضيلك التمرين في ${locationText}، ومستواك ${levelText}، جهزنا لك البرنامج الأنسب.`;
 }

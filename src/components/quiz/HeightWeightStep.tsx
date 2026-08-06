@@ -22,20 +22,20 @@ export function HeightWeightStep({
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col items-center gap-3">
-          <span className="text-sm font-bold text-ob-text-dim">الطول</span>
+          <span className="text-sm font-bold text-muted">الطول</span>
           <WheelPicker values={HEIGHT_VALUES} value={height} onChange={onChangeHeight} suffix="سم" />
         </div>
         <div className="flex flex-col items-center gap-3">
-          <span className="text-sm font-bold text-ob-text-dim">الوزن الحالي</span>
+          <span className="text-sm font-bold text-muted">الوزن الحالي</span>
           <WheelPicker values={WEIGHT_VALUES} value={weight} onChange={onChangeWeight} suffix="كجم" />
         </div>
       </div>
 
       {bmi > 0 && (
-        <div className="animate-ob-rise rounded-[22px] border border-white/[0.07] bg-ob-card px-5 py-4 text-center">
-          <p className="text-sm text-ob-text-dim">مؤشر كتلة الجسم (BMI)</p>
-          <p className="mt-1 text-[26px] font-extrabold text-white tabular-nums">{bmi.toFixed(1)}</p>
-          {category && <p className="mt-1 text-sm font-bold text-wk-pink-text">{category}</p>}
+        <div className="rounded-2xl border border-border bg-card px-5 py-4 text-center animate-fade-in">
+          <p className="text-sm text-muted">مؤشر كتلة الجسم (BMI)</p>
+          <p className="mt-1 text-2xl font-black text-foreground">{bmi.toFixed(1)}</p>
+          {category && <p className="mt-1 text-sm font-bold text-pink">{category}</p>}
         </div>
       )}
     </div>

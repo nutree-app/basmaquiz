@@ -4,21 +4,17 @@ export type Goal =
   | "المحافظة على الوزن"
   | "تحسين اللياقة";
 
-/**
- * Where the user trains. Replaces the old free-text TrainingPreference, whose
- * third option ("المنزل والنادي معًا") the redesigned question no longer
- * offers — see migrateAnswers() in storage.ts for how saved answers are mapped.
- */
-export type TrainingLocation = "gym" | "home";
-
-/** Training days per week. The generated schedule always has exactly this many days. */
-export type TrainingDays = 2 | 3 | 4 | 5 | 6;
+export type TrainingPreference = "النادي" | "المنزل" | "المنزل والنادي معًا";
 
 export type Level = "مبتدئة" | "متوسطة" | "متقدمة";
 
+export type WeeklyDays = "2 أيام" | "3 أيام" | "4 أيام" | "5 أيام";
+
 export type Gender = "أنثى" | "ذكر";
 
-export type ProgramType = "نظام غذائي + جدول تمارين + متابعة" | "جدول تمارين + متابعة";
+export type ProgramType =
+  | "نظام غذائي + جدول تمارين + متابعة"
+  | "جدول تمارين فقط، بدون متابعة وبدون نظام غذائي";
 
 export type ProductKey =
   | "CUTTING_PACKAGE"
@@ -30,9 +26,9 @@ export type ProductKey =
 
 export interface QuizAnswers {
   goal: Goal | "";
-  trainingLocation: TrainingLocation | "";
+  trainingPreference: TrainingPreference | "";
   level: Level | "";
-  trainingDays: TrainingDays | 0;
+  weeklyDays: WeeklyDays | "";
   gender: Gender | "";
   age: number;
   height: number;
@@ -64,29 +60,12 @@ export const DEFAULT_WEIGHT = 60;
 
 export const EMPTY_ANSWERS: QuizAnswers = {
   goal: "",
-  trainingLocation: "",
+  trainingPreference: "",
   level: "",
-  trainingDays: 0,
+  weeklyDays: "",
   gender: "",
   age: DEFAULT_AGE,
   height: DEFAULT_HEIGHT,
   weight: DEFAULT_WEIGHT,
   programType: "",
 };
-
-/** Arabic label for a training location — used in the lead, the result copy and analytics. */
-export const TRAINING_LOCATION_LABEL: Record<TrainingLocation, string> = {
-  gym: "النادي الرياضي",
-  home: "المنزل",
-};
-
-/** Arabic label for a training-day count, e.g. 3 -> "٣ أيام". */
-export const TRAINING_DAYS_LABEL: Record<TrainingDays, string> = {
-  2: "2 أيام",
-  3: "3 أيام",
-  4: "4 أيام",
-  5: "5 أيام",
-  6: "6 أيام",
-};
-
-export const TRAINING_DAYS_OPTIONS: TrainingDays[] = [2, 3, 4, 5, 6];

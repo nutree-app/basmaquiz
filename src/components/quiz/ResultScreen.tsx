@@ -1,18 +1,44 @@
-"use client";
-
 import { ProductCard } from "@/components/ProductCard";
 import { WhatsAppButton } from "@/components/buttons";
-import { WorkoutPlanCard } from "@/components/workout/WorkoutPlanCard";
 import { PRODUCTS } from "@/lib/products";
 import {
   buildResultExplanation,
   buildResultTitle,
-  getRecommendedProduct,
+  getRecommendedProducts,
+  hasExclusiveRecommendation,
 } from "@/lib/recommendation";
-import { buildWorkoutPlan } from "@/lib/workout-plan";
 import { ProductKey, QuizAnswers } from "@/lib/types";
 import { getResultWhatsAppUrl } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
+
+// بطاقة مصغّرة لجدول التمارين - تُعرض فقط في قسم "أو جدول تمارين بدون متابعة"
+function TableOptionCard({
+  emoji,
+  title,
+  description,
+  href,
+  onSelect,
+}: {
+  emoji: string;
+  title: string;
+  description: string;
+  href: string;
+  onSelect: () => void;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={onSelect}
+      className="flex flex-col items-center rounded-2xl border border-border bg-card p-4 text-center transition-transform active:scale-[0.98] hover:border-muted"
+    >
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow/15 text-lg">
+        {emoji}
+      </span>
+      <h4 className="mt-3 text-base font-extrabold text-foreground">{title}</h4>
+      <p className="mt-1 text-xs leading-5 text-muted">{description}</p>
+    </a>
+  );
+}
 
 export function ResultScreen({
   answers,
@@ -23,50 +49,81 @@ export function ResultScreen({
 }) {
   const title = buildResultTitle();
   const explanation = buildResultExplanation(answers);
-  const recommended = getRecommendedProduct(answers);
-  const plan = buildWorkoutPlan(answers);
+  const recommended = getRecommendedProducts(answers);
+  const isSingle = recommended.length === 1;
+  // الترشيح الحصري يغني عن عرض الجداول كبديل
+  const showTables = !hasExclusiveRecommendation(answers);
 
   return (
-    <div className="scrollbar-hide flex-1 overflow-y-auto overscroll-contain">
-      <div className="animate-ob-enter px-6 pb-10 pt-8">
-        <div className="text-center">
-          <h2 className="text-balance text-[26px] font-extrabold leading-tight text-white">
-            {title}
-          </h2>
-          <p className="mx-auto mt-3 max-w-[340px] text-[14.5px] leading-7 text-ob-text-dim">
-            {explanation}
-          </p>
-        </div>
+    <div className="animate-fade-in flex flex-1 flex-col px-6 pb-10 pt-10">
+      <div className="text-center">
+        <h2 className="text-2xl font-black leading-tight text-foreground">{title}</h2>
+        <p className="mt-3 text-sm leading-7 text-muted">{explanation}</p>
+      </div>
 
-        {/* The generated week — driven by the training location and day count. */}
-        {plan && (
-          <div className="mt-7">
-            <WorkoutPlanCard plan={plan} />
-          </div>
-        )}
-
-        <div className="mt-7">
+      <div className="mt-8 flex flex-col gap-4">
+        {recommended.map((key) => (
           <ProductCard
-            product={PRODUCTS[recommended]}
-            onSelect={() => onSelectProduct(recommended)}
+            key={key}
+            product={PRODUCTS[key]}
+            highlighted={isSingle}
+            onSelect={() => onSelectProduct(key)}
           />
-        </div>
+        ))}
+      </div>
 
-        <div className="mt-7 rounded-[22px] border border-white/[0.07] bg-ob-card p-6 text-center">
-          <h4 className="text-[17px] font-extrabold text-white">
-            تحتاجين مساعدة في اختيار البرنامج؟
-          </h4>
-          <p className="mt-2 text-[14px] leading-6 text-ob-text-dim">
-            تواصلي معنا عبر الواتساب وبنساعدك تختارين الأنسب لك.
-          </p>
-          <div className="mt-5">
-            <WhatsAppButton
-              href={getResultWhatsAppUrl(answers)}
-              onClick={() => trackEvent("whatsapp_click", { context: "result" })}
-            >
-              تواصل واتساب
-            </WhatsAppButton>
+      {showTables && (
+        <>
+          <div className="mt-10 h-px w-full bg-border/60" aria-hidden="true" />
+
+          <div className="mt-8">
+            <div className="text-center">
+              <h3 className="text-lg font-extrabold text-foreground">
+                أو إذا كنت تفضلين جدول تمارين بدون متابعة
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                اختاري الخيار المناسب لأسلوب حياتك.
+              </p>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-4">
+              <TableOptionCard
+                emoji="🏠"
+                title="المنزل"
+                description={PRODUCTS.HOME_TABLE.description}
+                href={PRODUCTS.HOME_TABLE.link}
+                onSelect={() => onSelectProduct("HOME_TABLE")}
+              />
+              <TableOptionCard
+                emoji="🏋️‍♀️"
+                title="النادي"
+                description={PRODUCTS.GYM_TABLE.description}
+                href={PRODUCTS.GYM_TABLE.link}
+                onSelect={() => onSelectProduct("GYM_TABLE")}
+              />
+            </div>
           </div>
+        </>
+      )}
+
+      <div
+        className={`rounded-3xl border border-border bg-card p-6 text-center ${
+          showTables ? "mt-8" : "mt-10"
+        }`}
+      >
+        <h4 className="text-lg font-extrabold text-foreground">
+          تحتاجين مساعدة في اختيار البرنامج؟
+        </h4>
+        <p className="mt-2 text-sm leading-6 text-muted">
+          تواصلي معنا عبر الواتساب وبنساعدك تختارين الأنسب لك.
+        </p>
+        <div className="mt-5">
+          <WhatsAppButton
+            href={getResultWhatsAppUrl(answers)}
+            onClick={() => trackEvent("whatsapp_click", { context: "result" })}
+          >
+            تواصل واتساب
+          </WhatsAppButton>
         </div>
       </div>
     </div>

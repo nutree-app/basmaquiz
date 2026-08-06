@@ -1,7 +1,12 @@
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
+};
+
+type LinkButtonProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  children: ReactNode;
+  href: string;
 };
 
 // شكل الزر الأصفر الأساسي - مُصدَّر عشان الروابط <a> تستخدم نفس الشكل بدون تكرار
@@ -13,6 +18,32 @@ export function PrimaryButton({ children, className = "", ...props }: ButtonProp
     <button className={`${primaryButtonClass} ${className}`} {...props}>
       {children}
     </button>
+  );
+}
+
+// نفس شكل الزر الأساسي لكن كرابط - تستخدمه بطاقة المنتج الموصى به
+export function PrimaryLinkButton({ children, className = "", href, ...props }: LinkButtonProps) {
+  return (
+    <a
+      href={href}
+      className={`block w-full rounded-2xl bg-yellow px-6 py-4 text-center text-base font-extrabold text-yellow-text shadow-lg shadow-black/20 transition-transform active:scale-[0.98] ${className}`}
+      {...props}
+    >
+      {children}
+    </a>
+  );
+}
+
+// الشكل الثانوي كرابط - تستخدمه بطاقات المنتجات غير المميزة
+export function SecondaryLinkButton({ children, className = "", href, ...props }: LinkButtonProps) {
+  return (
+    <a
+      href={href}
+      className={`block w-full rounded-2xl border border-border bg-transparent px-6 py-4 text-center text-base font-bold text-foreground transition-colors active:scale-[0.98] ${className}`}
+      {...props}
+    >
+      {children}
+    </a>
   );
 }
 
@@ -42,12 +73,12 @@ export function BackButton({ className = "", ...props }: ButtonHTMLAttributes<HT
   return (
     <button
       aria-label="رجوع"
-      className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-transparent text-foreground transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors active:scale-95 disabled:opacity-30 ${className}`}
       {...props}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path
-          d="M9 5l7 7-7 7"
+          d="M15 5l-7 7 7 7"
           stroke="currentColor"
           strokeWidth="2.2"
           strokeLinecap="round"

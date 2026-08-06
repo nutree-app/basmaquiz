@@ -1,11 +1,23 @@
-import {
-  type Gender,
-  type Goal,
-  type Level,
-  type QuizAnswers,
-  type TrainingDays,
-  type TrainingLocation,
-} from "./types";
+import { type Gender, type Goal, type Level } from "./types";
+
+/**
+ * Where the user trains — drives the exercise vocabulary. Declared here rather
+ * than imported so the shared exercise tables stay independent of any one
+ * flow's answer shape; /workout has its own identical union.
+ */
+export type TrainingLocation = "home" | "gym";
+
+/** Training days per week. The generated split always has exactly this many days. */
+export type TrainingDays = 2 | 3 | 4 | 5 | 6;
+
+/** The answers this builder actually reads — a structural subset, not a whole flow's state. */
+export interface WorkoutPlanInput {
+  trainingLocation: TrainingLocation | "" | null;
+  trainingDays: TrainingDays | 0 | null;
+  level?: Level | "";
+  goal?: Goal | "";
+  gender?: Gender | "";
+}
 
 /**
  * Turns the quiz answers into a concrete weekly training plan.
@@ -240,7 +252,7 @@ function orderForGender(
  * Builds the weekly plan. Returns null only when the two driving answers are
  * missing, so callers can fall back rather than render an empty schedule.
  */
-export function buildWorkoutPlan(answers: QuizAnswers): WorkoutPlan | null {
+export function buildWorkoutPlan(answers: WorkoutPlanInput): WorkoutPlan | null {
   const { trainingLocation, trainingDays } = answers;
   if (!trainingLocation || !trainingDays) return null;
 
@@ -255,7 +267,7 @@ export function buildWorkoutPlan(answers: QuizAnswers): WorkoutPlan | null {
       pool[focus].slice(0, perDay),
       focus,
       trainingLocation,
-      answers.gender
+      answers.gender ?? ""
     ),
   }));
 
