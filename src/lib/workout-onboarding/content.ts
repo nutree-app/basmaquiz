@@ -59,7 +59,7 @@ export const trainingDaysChoices: Choice<string>[] = TRAINING_DAYS_OPTIONS.map((
 }));
 
 /* ------------------------------------------------------------------ */
-/* Steps 17–19 — the automatic build screens                            */
+/* Steps 16–18 — the automatic build screens                            */
 /* ------------------------------------------------------------------ */
 
 export const transitionSteps = {
@@ -74,14 +74,14 @@ export const transitionSteps = {
     subtitle: "نوزع تمارينك على أيام الأسبوع حسب مكان تمرينك وعدد أيامك.",
   },
   calculating: {
-    emoji: "🔥",
+    emoji: "🥗",
     title: "نحسب تغذيتك",
     subtitle: "نضبط سعراتك والماكروز وهدف الماء على أساس بياناتك.",
   },
 } as const;
 
 /* ------------------------------------------------------------------ */
-/* Step 20 — the Basmafit offer                                         */
+/* Step 19 — the Basmafit offer                                         */
 /* ------------------------------------------------------------------ */
 
 export const offerStep = {

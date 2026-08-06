@@ -27,7 +27,6 @@ import PersonalStep from "@/components/onboarding/steps/PersonalStep";
 import PlanStep from "@/components/onboarding/steps/PlanStep";
 import SummaryStep from "@/components/onboarding/steps/SummaryStep";
 import TargetWeightStep from "@/components/onboarding/steps/TargetWeightStep";
-import WaterStep from "@/components/onboarding/steps/WaterStep";
 import type { StepProps } from "@/components/onboarding/stepProps";
 import { WorkoutShell } from "@/components/workout/WorkoutShell";
 import { WorkoutHeroScreen } from "@/components/workout-onboarding/WorkoutHeroScreen";
@@ -61,13 +60,16 @@ import BasmafitOfferStep from "./BasmafitOfferStep";
 import TransitionStep from "./TransitionStep";
 
 /**
- * The Basmafit workout onboarding: twenty counted steps built on the Nutree
- * flow's own screens, calculations and palette.
+ * The Basmafit workout onboarding: nineteen counted steps built on the Nutree
+ * flow's own screens and calculations.
  *
- * Only the welcome screen is Basmafit-branded — it keeps its pink button, copy
- * and shell. Everything from step 1 onward renders inside the Nutree PhoneShell
- * with the Nutree colours untouched, which is why the Nutree step components
- * are imported directly rather than restyled copies.
+ * The step components are imported from the Nutree flow rather than copied and
+ * restyled — they read their accent from `data-ob-accent`, which the shells set
+ * to "basmafit" here, so this flow gets pink selections and a yellow primary
+ * action while /onboarding keeps its green.
+ *
+ * Steps 7–13 continue on their own the moment an answer is tapped; step 14
+ * (the plan) and everything after it wait for the "متابعة" button.
  */
 export default function WorkoutOnboardingFlow() {
   const boot = useWorkoutBoot();
@@ -140,7 +142,7 @@ function Flow({ boot }: { boot: WorkoutBoot }) {
   };
 
   return (
-    <PhoneShell>
+    <PhoneShell accent="basmafit">
       <ProgressHeader
         step={displayStep(stepId)}
         total={TOTAL_STEPS}
@@ -255,6 +257,7 @@ function renderStep({
           onNext={onNext}
           onBack={onBack}
           tiledEmoji
+          autoAdvance
         />
       );
 
@@ -272,6 +275,7 @@ function renderStep({
           onNext={onNext}
           onBack={onBack}
           tiledEmoji
+          autoAdvance
         />
       );
 
@@ -317,9 +321,8 @@ function renderStep({
         />
       );
 
-    case "water":
-      return <WaterStep {...stepProps} />;
-
+    /* Step 14. The first screen after the auto-advancing block, so it keeps
+       its "متابعة" button — nothing past step 13 moves on by itself. */
     case "plan":
       return <PlanStep {...stepProps} />;
 

@@ -32,6 +32,13 @@ export default function ChoiceList<T extends string>({
   name: string;
 }) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /*
+    Latched the moment a move is scheduled. Anything tapped during the delay —
+    a double tap on the same row, or a second row hit in the same instant — is
+    ignored, so one screen can never advance twice and the answer that is
+    stored is always the one left highlighted on the way out.
+  */
+  const advancing = useRef(false);
 
   useEffect(
     () => () => {
@@ -41,9 +48,10 @@ export default function ChoiceList<T extends string>({
   );
 
   const select = (next: T) => {
+    if (advancing.current) return;
     onChange(next);
     if (!onAutoAdvance) return;
-    if (timer.current) clearTimeout(timer.current);
+    advancing.current = true;
     timer.current = setTimeout(onAutoAdvance, AUTO_ADVANCE_MS);
   };
 
@@ -62,7 +70,7 @@ export default function ChoiceList<T extends string>({
             style={{ animationDelay: `${60 + index * 45}ms` }}
             className={`animate-ob-rise flex w-full items-center gap-3.5 rounded-2xl border px-4 py-3.5 text-right transition-all duration-200 active:scale-[0.985] ${
               selected
-                ? "border-ob-green/70 bg-ob-green/[0.09] shadow-[0_0_0_1px_rgba(43,217,107,0.35),0_12px_30px_-16px_rgba(43,217,107,0.6)]"
+                ? "border-[var(--ob-accent-border)] bg-[var(--ob-accent-surface)] shadow-[0_0_0_1px_var(--ob-accent-ring),0_12px_30px_-16px_var(--ob-accent-glow)]"
                 : "border-white/[0.07] bg-ob-card hover:border-white/15"
             }`}
           >
@@ -95,11 +103,16 @@ export default function ChoiceList<T extends string>({
 
             <span
               className={`grid h-[22px] w-[22px] shrink-0 place-items-center rounded-full border-2 transition-colors duration-200 ${
-                selected ? "border-ob-green bg-ob-green" : "border-white/25"
+                selected
+                  ? "border-[var(--ob-accent)] bg-[var(--ob-accent)]"
+                  : "border-white/25"
               }`}
             >
               {selected && (
-                <Check className="animate-ob-check h-3 w-3 text-[#04240F]" strokeWidth={4} />
+                <Check
+                  className="animate-ob-check h-3 w-3 text-[var(--ob-accent-contrast)]"
+                  strokeWidth={4}
+                />
               )}
             </span>
           </button>

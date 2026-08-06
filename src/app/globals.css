@@ -374,6 +374,11 @@ body:has([data-nutree-onboarding]) {
   --color-wk-pink-deep: #2a1018;
   --color-wk-pink-text: #e98fa9;
 
+  /* The primary action colour: Basmafit's yellow, the same value the quiz
+     pages use, so the main CTA reads as the brand's button everywhere. */
+  --color-wk-yellow: #ffd21a;
+  --color-wk-yellow-text: #1e1e1e;
+
   --animate-wk-ring: wk-ring 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-wk-float: wk-float 5s ease-in-out infinite;
   --animate-wk-orbit: wk-orbit 26s linear infinite;
@@ -446,6 +451,58 @@ body:has([data-nutree-onboarding]) {
       transform: scale(1.06);
     }
   }
+}
+
+/* ==================================================================== */
+/* Accent + CTA tokens                                                   */
+/*                                                                       */
+/* ProgressHeader, ChoiceList, StepFooter, PersonalStep and              */
+/* SegmentedControl are rendered by *both* flows, so their accent is a    */
+/* variable rather than a fixed `ob-green` class. /onboarding keeps the   */
+/* Nutree green; /workout re-points the same names at Basmafit's pink     */
+/* (#B44669) for the selected state and the brand yellow for the primary  */
+/* action. The two blocks never match the same element, so neither        */
+/* depends on source order.                                              */
+/*                                                                       */
+/* `data-ob-accent` is set by PhoneShell (defaults to nutree) and by      */
+/* WorkoutShell.                                                          */
+/* ==================================================================== */
+
+[data-ob-accent="nutree"] {
+  --ob-accent: #2bd96b;
+  --ob-accent-contrast: #04240f;
+  --ob-accent-surface: rgba(43, 217, 107, 0.09);
+  --ob-accent-border: rgba(43, 217, 107, 0.7);
+  --ob-accent-ring: rgba(43, 217, 107, 0.35);
+  --ob-accent-glow: rgba(43, 217, 107, 0.6);
+  --ob-accent-glow-strong: rgba(43, 217, 107, 0.7);
+  --ob-accent-bar-glow: rgba(43, 217, 107, 0.55);
+
+  --ob-cta: #2bd96b;
+  --ob-cta-contrast: #04240f;
+  --ob-cta-glow: rgba(43, 217, 107, 0.65);
+  --ob-cta-glow-strong: rgba(43, 217, 107, 0.75);
+}
+
+[data-ob-accent="basmafit"] {
+  --ob-accent: #b44669;
+  /* White rather than a dark tint: the tick sits on solid #B44669. */
+  --ob-accent-contrast: #ffffff;
+  /* A touch stronger than the green fill — the pink is darker, so the same
+     alpha would barely separate a selected card from the navy surface. */
+  --ob-accent-surface: rgba(180, 70, 105, 0.16);
+  --ob-accent-border: rgba(180, 70, 105, 0.7);
+  --ob-accent-ring: rgba(180, 70, 105, 0.4);
+  --ob-accent-glow: rgba(180, 70, 105, 0.6);
+  --ob-accent-glow-strong: rgba(180, 70, 105, 0.7);
+  --ob-accent-bar-glow: rgba(180, 70, 105, 0.55);
+
+  --ob-cta: #ffd21a;
+  --ob-cta-contrast: #1e1e1e;
+  /* Yellow reads much brighter than the green it replaces, so the drop
+     shadow is dialled back to keep the halo from blooming. */
+  --ob-cta-glow: rgba(255, 210, 26, 0.5);
+  --ob-cta-glow-strong: rgba(255, 210, 26, 0.6);
 }
 
 html:has([data-workout-flow]) {

@@ -30,7 +30,7 @@ export default function PersonalStep({ state, patch, onNext, onBack }: StepProps
               style={{ animationDelay: `${80 + index * 70}ms` }}
               className={`animate-ob-rise flex flex-col items-center gap-2 rounded-2xl border py-6 transition-all duration-200 active:scale-[0.97] ${
                 selected
-                  ? "border-ob-green/70 bg-ob-green/[0.09] shadow-[0_0_0_1px_rgba(43,217,107,0.35),0_14px_34px_-18px_rgba(43,217,107,0.7)]"
+                  ? "border-[var(--ob-accent-border)] bg-[var(--ob-accent-surface)] shadow-[0_0_0_1px_var(--ob-accent-ring),0_14px_34px_-18px_var(--ob-accent-glow-strong)]"
                   : "border-white/[0.07] bg-ob-card hover:border-white/15"
               }`}
             >

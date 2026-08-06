@@ -20,20 +20,34 @@ function state(overrides: Partial<WorkoutOnboardingState> = {}): WorkoutOnboardi
 }
 
 /* ------------------------------------------------------------------ */
-/* Twenty steps, 5% each                                                */
+/* Nineteen steps                                                       */
 /* ------------------------------------------------------------------ */
 
-test("the flow is exactly 20 counted steps", () => {
-  assert.equal(TOTAL_STEPS, 20);
+test("the flow is exactly 19 counted steps", () => {
+  assert.equal(TOTAL_STEPS, 19);
+  assert.equal(STEP_IDS.filter((id) => id !== "welcome").length, TOTAL_STEPS);
   assert.equal(displayStep("personal"), 1);
-  assert.equal(displayStep("offer"), 20);
+  assert.equal(displayStep("offer"), 19);
 });
 
-test("progress runs 5% to 100% in clean 5% increments", () => {
+test("progress climbs from 5% to 100% without ever going backwards", () => {
   const counted = STEP_IDS.filter((id) => id !== "welcome");
   const percents = counted.map((id) => stepPercent(id));
-  assert.deepEqual(percents, [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]);
+  assert.deepEqual(percents, [
+    5, 11, 16, 21, 26, 32, 37, 42, 47, 53, 58, 63, 68, 74, 79, 84, 89, 95, 100,
+  ]);
+  for (let i = 1; i < percents.length; i += 1) {
+    assert.ok(percents[i] > percents[i - 1], `step ${i + 1} must advance the bar`);
+  }
   assert.equal(stepPercent("welcome"), 5); // shares step 1, not counted separately
+});
+
+test("the hydration screen is gone from the flow entirely", () => {
+  assert.ok(!(STEP_IDS as readonly string[]).includes("water"));
+  // And a save left on it can't resurrect it.
+  const restored = migratePersisted({ stepId: "water", state: state({ goal: "lose" }) })!;
+  assert.equal(restored.stepId, "welcome");
+  assert.equal(restored.state.waterMl, null);
 });
 
 test("the two workout questions are steps 9 and 10", () => {
@@ -48,7 +62,7 @@ test("all Nutree intake steps survive, in order, none duplicated", () => {
     "personal", "body", "goal", "activity", "target", "pace", "diet", "protein",
     "trainingLocation", "trainingDays",
     "habits", "motivation", "tracking",
-    "water", "plan", "summary",
+    "plan", "summary",
     "analyzing", "building", "calculating",
     "offer",
   ]);

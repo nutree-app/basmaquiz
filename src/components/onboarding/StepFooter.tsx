@@ -35,7 +35,7 @@ export default function StepFooter({
           className={`h-[54px] flex-1 rounded-[18px] text-[17px] font-bold transition-all duration-200 ${
             nextDisabled
               ? "cursor-not-allowed bg-ob-card-alt text-ob-text-faint"
-              : "bg-ob-green text-[#04240F] shadow-[0_10px_30px_-10px_rgba(43,217,107,0.65)] active:scale-[0.98]"
+              : "bg-[var(--ob-cta)] text-[var(--ob-cta-contrast)] shadow-[0_10px_30px_-10px_var(--ob-cta-glow)] active:scale-[0.98]"
           }`}
         >
           {nextLabel}

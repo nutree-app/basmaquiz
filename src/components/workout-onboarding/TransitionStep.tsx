@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const DURATION_MS = 1900;
 
 /**
- * One of the three automatic build screens (steps 17–19).
+ * One of the three automatic build screens (steps 16–18).
  *
  * Fills a ring over a fixed duration and then advances on its own — no button.
  * The step is still counted and still shows the progress header, so the back

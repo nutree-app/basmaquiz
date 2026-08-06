@@ -3,11 +3,12 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 /**
- * Pink primary button + square back control, mirroring the onboarding footer.
+ * Yellow primary button + square back control, mirroring the onboarding footer.
  *
- * Kept separate from components/buttons.tsx on purpose: that module's yellow
+ * Kept separate from components/buttons.tsx on purpose: that module's
  * `primaryButtonClass` is still used by /home-workout-guide, so it must not
- * change.
+ * change — this one carries the same brand yellow in the flow's own sizing.
+ * Pink is now reserved for the selected state, not for actions.
  */
 export function WorkoutPrimaryButton({
   children,
@@ -16,7 +17,7 @@ export function WorkoutPrimaryButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode }) {
   return (
     <button
-      className={`h-[54px] w-full rounded-[18px] bg-wk-pink text-[17px] font-bold text-white shadow-[0_10px_30px_-10px_rgba(180,70,105,0.75)] transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-ob-card-alt disabled:text-ob-text-faint disabled:shadow-none ${className}`}
+      className={`h-[54px] w-full rounded-[18px] bg-wk-yellow text-[17px] font-bold text-wk-yellow-text shadow-[0_10px_30px_-10px_rgba(255,210,26,0.5)] transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-ob-card-alt disabled:text-ob-text-faint disabled:shadow-none ${className}`}
       {...props}
     >
       {children}

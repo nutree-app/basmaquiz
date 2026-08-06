@@ -10,8 +10,6 @@ import {
   MIN_WEIGHT_KG,
   PACE_MAX_PERCENT,
   PACE_MIN_PERCENT,
-  WATER_MAX_ML,
-  WATER_MIN_ML,
   clamp,
 } from "@/lib/onboarding/calculations";
 import { INITIAL_STATE as NUTREE_INITIAL_STATE } from "@/lib/onboarding/state";
@@ -44,6 +42,13 @@ export const INITIAL_STATE: WorkoutOnboardingState = {
   ...NUTREE_INITIAL_STATE,
   trainingLocation: null,
   trainingDays: null,
+  /*
+    This flow has no hydration question. The field stays on the object because
+    the shared plan builder takes the whole Nutree answer set, but it is pinned
+    to null so the daily water figure is always the recommended one — nothing
+    in the flow can set it, and nothing displays it.
+  */
+  waterMl: null,
 };
 
 export type WorkoutAction =
@@ -82,7 +87,8 @@ function normalise(state: WorkoutOnboardingState): WorkoutOnboardingState {
         ? null
         : clamp(state.targetWeightKg, MIN_WEIGHT_KG, MAX_WEIGHT_KG),
     pacePercent: clamp(state.pacePercent, PACE_MIN_PERCENT, PACE_MAX_PERCENT),
-    waterMl: state.waterMl === null ? null : clamp(state.waterMl, WATER_MIN_ML, WATER_MAX_ML),
+    // No hydration screen here, so there is no user-set value to keep in range.
+    waterMl: null,
   };
 }
 
@@ -116,7 +122,8 @@ function isDays(value: unknown): value is TrainingDays {
  * Anything unrecognised falls back to its initial value rather than throwing,
  * so a save written by the older 8-step workout flow — or a truncated or
  * hand-edited one — can never crash the page. If the saved step id is not part
- * of the current 20-step order, the run simply restarts at step 1.
+ * of the current 19-step order — a save left on the removed hydration screen,
+ * for instance — the run simply restarts at step 1.
  */
 export function migratePersisted(raw: unknown): { stepId: StepId; state: WorkoutOnboardingState } | null {
   if (!isRecord(raw)) return null;

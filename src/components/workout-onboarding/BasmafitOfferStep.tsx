@@ -13,11 +13,11 @@ import { trackEvent } from "@/lib/analytics";
 import StepFooter from "@/components/onboarding/StepFooter";
 
 /**
- * Step 20 — the finished plan, in the Nutree offer layout with Basmafit copy.
+ * Step 19 — the finished plan, in the Nutree offer layout with Basmafit copy.
  *
- * Keeps the Nutree palette exactly (navy surfaces, green accent, orange calorie
- * figure, red/green/blue macro cards). The CTA opens the Basmafit product that
- * matches the goal answered on step 3.
+ * Keeps the Nutree surfaces (navy cards, orange calorie figure, red/green/blue
+ * macro cards); only the CTA takes the flow's yellow. It opens the Basmafit
+ * product that matches the goal answered on step 3.
  */
 export default function BasmafitOfferStep({
   state,
@@ -190,7 +190,7 @@ export default function BasmafitOfferStep({
         <button
           type="button"
           onClick={checkout}
-          className="relative flex h-[60px] w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-ob-green text-[17px] font-extrabold text-[#04240F] shadow-[0_14px_38px_-12px_rgba(43,217,107,0.75)] transition-transform duration-200 active:scale-[0.98]"
+          className="relative flex h-[60px] w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[var(--ob-cta)] text-[17px] font-extrabold text-[var(--ob-cta-contrast)] shadow-[0_14px_38px_-12px_var(--ob-cta-glow-strong)] transition-transform duration-200 active:scale-[0.98]"
         >
           {offerStep.cta}
           <ArrowLeft className="h-5 w-5" strokeWidth={2.6} />

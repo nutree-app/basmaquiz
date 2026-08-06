@@ -16,6 +16,7 @@ export function WorkoutShell({ children }: { children: ReactNode }) {
   return (
     <div
       data-workout-flow
+      data-ob-accent="basmafit"
       className="relative flex min-h-[100dvh] w-full justify-center bg-ob-surround md:items-center md:p-6"
     >
       {/* Ambient glow behind the phone — desktop only, purely decorative. */}

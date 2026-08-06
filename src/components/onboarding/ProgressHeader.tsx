@@ -34,7 +34,7 @@ export default function ProgressHeader({
         aria-label={ui.stepCounter(step, total)}
       >
         <div
-          className="h-full rounded-full bg-ob-green shadow-[0_0_12px_rgba(43,217,107,0.55)] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="h-full rounded-full bg-[var(--ob-accent)] shadow-[0_0_12px_var(--ob-accent-bar-glow)] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{ width: `${percent}%` }}
         />
       </div>

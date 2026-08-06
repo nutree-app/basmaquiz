@@ -10,12 +10,22 @@ import type { ReactNode } from "react";
  * layout inside never has to change between the two.
  *
  * The `data-nutree-onboarding` attribute is what globals.css keys off to
- * darken the document body while the flow is mounted.
+ * darken the document body while the flow is mounted, and `data-ob-accent`
+ * is what the shared step components read their accent colours from — the
+ * workout flow renders this same shell under the Basmafit palette.
  */
-export default function PhoneShell({ children }: { children: ReactNode }) {
+export default function PhoneShell({
+  children,
+  accent = "nutree",
+}: {
+  children: ReactNode;
+  /** Selects the accent/CTA token set defined in globals.css. */
+  accent?: "nutree" | "basmafit";
+}) {
   return (
     <div
       data-nutree-onboarding
+      data-ob-accent={accent}
       className="relative flex min-h-[100dvh] w-full justify-center bg-ob-surround md:items-center md:p-6"
     >
       {/* Ambient glow behind the phone — desktop only, purely decorative. */}
